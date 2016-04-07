@@ -24,7 +24,8 @@ ${EXECBIN} : ${OBJECTS}
 	${GCC} -c $<
 
 ci :
-	checksource ${CHECKINS}
+	cid + ${CHECKINS}
+	perl /afs/cats.ucsc.edu/courses/cmps012b-wm/bin/checksource ${CHECKINS}
 
 clean :
 	- rm ${OBJECTS}
