@@ -1,4 +1,4 @@
-#include <string>
+#include <string.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,7 +54,7 @@ void cpplines (FILE* pipe, char* filename) {
 int main(int argc, char** argv) {
    set_execname(argv[0]);
    for (int argi = 1; argi < argc; ++argi) {
-      char* filename = arg[argi];
+      char* filename = argv[argi];
       string command = CPP + " " + filename;
       printf("command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
