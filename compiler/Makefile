@@ -11,7 +11,7 @@ HEADERS    = ${wildcard *.h}
 OBJECTS    = ${SOURCES:.cpp=.o}
 EXECBIN    = oc
 SRCFILES   = ${HEADERS} ${SOURCES} ${MKFILE}
-SMALLFILES = ${DEPFILE} foo.oc foo1.oh foo2.oh
+SMALLFILES = ${DEPFILE} foo.oc foo1.oh foo2.oh bar.oc
 CHECKINS   = ${SRCFILES} ${SMALLFILES}
 LISTING    = Listing.ps
 
@@ -24,7 +24,6 @@ ${EXECBIN} : ${OBJECTS}
 	${GCC} -c $<
 
 ci :
-	cid + ${CHECKINS}
 	checksource ${CHECKINS}
 
 clean :
