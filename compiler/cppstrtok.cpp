@@ -58,7 +58,7 @@ void cpplines (FILE* pipe, char* filename) {
    }
 }
 
-/*
+
 int main (int argc, char** argv) {
    set_execname (argv[0]);
    for (int argi = 1; argi < argc; ++argi) {
@@ -77,4 +77,3 @@ int main (int argc, char** argv) {
    }
    return get_exitstatus();
 }
-*/
