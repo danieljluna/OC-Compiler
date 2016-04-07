@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <wait.h>
 
-#include "auxlib.h"
-
 using namespace std;
+
+#include "auxlib.h"
 
 const string CPP = "/usr/bin/cpp";
 constexpr size_t LINESIZE = 1024;
