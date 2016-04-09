@@ -1,5 +1,6 @@
 //djluna
 #include <string>
+#include <iostream>
 
 #include <libgen.h>
 #include <errno.h>
@@ -7,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wait.h>
+#include <unistd.h>
 
 #include "auxlib.h"
 
@@ -55,8 +57,45 @@ void cpplines (FILE* pipe, char* filename) {
 }
 
 
+void main(int argc, char** argv) {
+   int c;
+   opterr = 0;
+   
+   while ((c = getopt(argc, argv, "@lyD:") != -1) {
+      switch(c) {
+         case '@':
+            set_debugflag(optarg);
+            break;
+         case 'l':
+            yydebug = 1;
+            break;
+         case 'y':
+            yy_flex_debug = 1;
+            break;
+         case 'D':
+            //Pass optarg to CPP
+            break;
+         case '?':
+            if (optopt == 'D') { //We didn't get an argument for -D
+               cerr << "Option -D requires an argument." << endl;
+               //fprintf(stderr, "Option -%D requires an argument.\n", optopt);
+            } else if (isprint(optopt)) { //Couldn't handle an option
+               cerr << "Unknown option '-" << optopt << "'." << endl;
+            } else {
+               cerr << "Unknown option character '" << int(optopt) << 
+                       "'." << endl;
+            }
+            break;
+      }
+   }
+}
+
+
 int main(int argc, char** argv) {
    set_execname(argv[0]);
+   
+   parse_args(argc, char** argv);
+   
    for (int argi = 1; argi < argc; ++argi) {
       char* filename = argv[argi];
       string command = CPP + " " + filename;
