@@ -112,7 +112,7 @@ void __debugprintf (char flag, const char* file, int line,
 #define DEBUGF(FLAG,CODE) { \
            if (is_debugflag (FLAG)) { \
               __debugprintf (FLAG, __FILE__, __LINE__, __func__); \
-              cerr << CODE << endl; \
+              std::cerr << CODE << std::endl; \
            } \
         }
 #define DEBUGS(FLAG,STMT) { \
