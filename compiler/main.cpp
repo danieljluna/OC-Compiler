@@ -57,7 +57,7 @@ void cpplines (FILE* pipe, char* filename) {
 }
 
 
-void main(int argc, char** argv) {
+void parse_args(int argc, char** argv) {
    int c;
    opterr = 0;
    
@@ -94,7 +94,7 @@ void main(int argc, char** argv) {
 int main(int argc, char** argv) {
    set_execname(argv[0]);
    
-   parse_args(argc, char** argv);
+   parse_args(argc, argv);
    
    for (int argi = 1; argi < argc; ++argi) {
       char* filename = argv[argi];
