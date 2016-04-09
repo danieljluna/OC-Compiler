@@ -76,7 +76,7 @@ void parse_args(int argc, char** argv) {
             //Pass optarg to CPP
             break;
          case '?':
-            string string_optopt = string(optopt);
+            string string_optopt(char(optopt));
             if (optopt == 'D') { //We didn't get an argument for -D
                cerr << "Option -D requires an argument." << endl;
                //fprintf(stderr, "Option -%D requires an argument.\n", optopt);
