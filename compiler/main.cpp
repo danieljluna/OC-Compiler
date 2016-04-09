@@ -91,8 +91,8 @@ void parse_args(int argc, char** argv) {
    }
    
    //Debug flag values
-   DEBUGF("a", "yydebug = " << string(yydebug) << endl);
-   DEBUGF("a", "yy_flex_debug = " << yy_flex_debug << endl);
+   DEBUGF("x", "yydebug = " << string(yydebug) << endl);
+   DEBUGF("x", "yy_flex_debug = " << yy_flex_debug << endl);
    
 }
 

@@ -94,7 +94,7 @@ int get_exitstatus (void) {
 
 void set_exitstatus (int newexitstatus) {
    if (exitstatus < newexitstatus) exitstatus = newexitstatus;
-   DEBUGF ('x', "exitstatus = %d\n", exitstatus);
+   DEBUGF ('x', "exitstatus = " << exitstatus << endl);
 }
 
 void __stubprintf (const char* file, int line, const char* func,
@@ -111,8 +111,8 @@ void __stubprintf (const char* file, int line, const char* func,
 void set_debugflags (const char* flags) {
    debugflags = flags;
    if (strchr (debugflags, '@') != NULL) alldebugflags = true;
-   DEBUGF ('x', "Debugflags = \"%s\", all = %d\n",
-           debugflags, alldebugflags);
+   DEBUGF ('x', "Debugflags = \"" << debugflags << "\", all = " <<
+           alldebugflags << endl);
 }
 
 bool is_debugflag (char flag) {
