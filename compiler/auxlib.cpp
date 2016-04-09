@@ -12,6 +12,7 @@
 
 #include "auxlib.h"
 
+//Define flex external variables
 int yydebug = 0;
 int yy_flex_debug = 0;
 

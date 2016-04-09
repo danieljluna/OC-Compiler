@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
    
    parse_args(argc, argv);
    
-   for (int argi = 1; argi < argc; ++argi) {
+   for (int argi = optind; argi < argc; ++argi) {
       char* filename = argv[argi];
       string command = CPP + " " + filename;
       printf("command=\"%s\"\n", command.c_str());
