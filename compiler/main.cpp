@@ -78,13 +78,13 @@ void parse_args(int argc, char** argv) {
          case '?':
             string string_optopt(char(optopt));
             if (optopt == 'D') { //We didn't get an argument for -D
-               cerr << "Option -D requires an argument." << endl;
-               //fprintf(stderr, "Option -%D requires an argument.\n", optopt);
+               fprintf (stderr, "Option -%c requires an argument.\n", 
+                        optopt);
             } else if (isprint(optopt)) { //Couldn't handle an option
-               cerr << "Unknown option '-" << string_optopt << "'.\n";
+               fprintf (stderr, "Unknown option `-%c'.\n", optopt);
             } else {
-               cerr << "Unknown option character '" << optopt << "'."
-                    << endl;
+               fprintf (stderr, "Unknown option character `\\x%x'.\n",
+                        optopt);
             }
             break;
       }
