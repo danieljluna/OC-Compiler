@@ -107,11 +107,19 @@ bool is_debugflag (char flag);
 #else
 // Generate debugging code.
 void __debugprintf (char flag, const char* file, int line,
-                    const char* func, const char* format, ...);
-#define DEBUGF(FLAG,...) \
-        __debugprintf (FLAG, __FILE__, __LINE__, __func__, __VA_ARGS__)
-#define DEBUGSTMT(FLAG,STMTS) \
-        if (is_debugflag (FLAG)) { DEBUGF (FLAG, "\n"); STMTS }
+                    const char* func);
+#define DEBUGF(FLAG,CODE) { \
+           if (is_debugflag (FLAG)) { \
+              __debugprintf (FLAG, __FILE__, __LINE__, __func__); \
+              cerr << CODE << endl; \
+           } \
+        }
+#define DEBUGS(FLAG,STMT) { \
+           if (is_debugflag (FLAG)) { \
+              __debugprintf (FLAG, __FILE__, __LINE__, __func__); \
+              STMT; \
+           } \
+        }
 #endif
 
 #endif

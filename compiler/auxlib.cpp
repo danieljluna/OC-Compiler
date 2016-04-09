@@ -120,14 +120,10 @@ bool is_debugflag (char flag) {
 }
 
 void __debugprintf (char flag, const char* file, int line,
-                    const char* func, const char* format, ...) {
-   va_list args;
+                    const char* func) {
    if (not is_debugflag (flag)) return;
    fflush (NULL);
-   va_start (args, format);
    fprintf (stderr, "DEBUGF(%c): %s[%d] %s():\n",
              flag, file, line, func);
-   vfprintf (stderr, format, args);
-   va_end (args);
    fflush (NULL);
 }
