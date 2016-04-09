@@ -80,7 +80,7 @@ void parse_args(int argc, char** argv) {
                cerr << "Option -D requires an argument." << endl;
                //fprintf(stderr, "Option -%D requires an argument.\n", optopt);
             } else if (isprint(optopt)) { //Couldn't handle an option
-               cerr << "Unknown option '-" << optopt << "'." << endl;
+               cerr << "Unknown option '-" + optopt + "'." << endl;
             } else {
                cerr << "Unknown option character '" << int(optopt) << 
                        "'." << endl;
