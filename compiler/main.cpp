@@ -89,6 +89,11 @@ void parse_args(int argc, char** argv) {
             break;
       }
    }
+   
+   //Debug flag values
+   DEBUGF("a", "yydebug = " << yydebug << endl);
+   DEBUGF("a", "yy_flex_debug = " << yy_flex_debug << endl);
+   
 }
 
 
@@ -97,7 +102,7 @@ int main(int argc, char** argv) {
    
    parse_args(argc, argv);
    
-   for (int argi = optind; argi < argc; ++argi) {
+   if (optind == argc)
       char* filename = argv[argi];
       string command = CPP + " " + filename;
       printf("command=\"%s\"\n", command.c_str());
