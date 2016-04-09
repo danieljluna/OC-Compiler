@@ -61,7 +61,7 @@ void parse_args(int argc, char** argv) {
    int c;
    opterr = 0;
    
-   while ((c = getopt(argc, argv, "@lyD:") != -1) {
+   while (c = getopt(argc, argv, "@lyD:") != -1) {
       switch(c) {
          case '@':
             set_debugflag(optarg);
