@@ -77,14 +77,19 @@ int parse_args(int argc, char** argv) {
             break;
          case '?':
             string string_optopt(char(optopt));
-            if ((optopt == 'D') || (optopt == '@')) { //We didn't get an argument for -D
+            //If we are short a req argument
+            if ((optopt == 'D') || (optopt == '@')) {
                fprintf (stderr, "Option -%c requires an argument.\n", 
                         optopt);
-            } else if (isprint(optopt)) { //Couldn't handle an option
-               fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-            } else {
-               fprintf (stderr, "Unknown option character `\\x%x'.\n",
+            //If we can't handle an arg
+            } else { 
+               if (isprint(optopt))
+                  fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+               else 
+                  fprintf(stderr,"Unknown option character `\\x%x'.\n",
                         optopt);
+            } else {
+               
             }
             break;
       }
