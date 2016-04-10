@@ -4,7 +4,6 @@
 #define __AUXLIB_H__
 
 #include <stdarg.h>
-#include <vector>
 
 extern int yydebug;
 extern int yy_flex_debug;
