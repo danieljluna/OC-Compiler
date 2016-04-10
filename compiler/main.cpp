@@ -121,6 +121,7 @@ int main(int argc, char** argv) {
       errprintf("Error: No file provided.\n");
    }
    
+   DEBUGF('x', "Exit Status: %i\n", get_exitstatus());
    return get_exitstatus();
 }
 
