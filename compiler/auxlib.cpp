@@ -12,10 +12,6 @@
 
 #include "auxlib.h"
 
-//Define flex external variables
-int yydebug = 0;
-int yy_flex_debug = 0;
-
 static int exitstatus = EXIT_SUCCESS;
 static const char* execname = NULL;
 static const char* debugflags = "";
@@ -94,7 +90,7 @@ int get_exitstatus (void) {
 
 void set_exitstatus (int newexitstatus) {
    if (exitstatus < newexitstatus) exitstatus = newexitstatus;
-   DEBUGF ('x', "exitstatus = " << exitstatus);
+   DEBUGF ('x', "exitstatus = %d\n", exitstatus);
 }
 
 void __stubprintf (const char* file, int line, const char* func,
@@ -111,8 +107,8 @@ void __stubprintf (const char* file, int line, const char* func,
 void set_debugflags (const char* flags) {
    debugflags = flags;
    if (strchr (debugflags, '@') != NULL) alldebugflags = true;
-   DEBUGF ('x', "Debugflags = \"" << debugflags << "\"");
-   DEBUGF ('x', "       all = " << alldebugflags);
+   DEBUGF ('x', "Debugflags = \"%s\", all = %d\n",
+           debugflags, alldebugflags);
 }
 
 bool is_debugflag (char flag) {
@@ -120,10 +116,14 @@ bool is_debugflag (char flag) {
 }
 
 void __debugprintf (char flag, const char* file, int line,
-                    const char* func) {
+                    const char* func, const char* format, ...) {
+   va_list args;
    if (not is_debugflag (flag)) return;
    fflush (NULL);
+   va_start (args, format);
    fprintf (stderr, "DEBUGF(%c): %s[%d] %s():\n",
              flag, file, line, func);
+   vfprintf (stderr, format, args);
+   va_end (args);
    fflush (NULL);
 }

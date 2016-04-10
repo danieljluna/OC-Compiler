@@ -91,8 +91,8 @@ int parse_args(int argc, char** argv) {
    }
    
    //Debug flag values
-   DEBUGF('x', "yydebug = " << yydebug << endl);
-   DEBUGF('x', "yy_flex_debug = " << yy_flex_debug << endl);
+   DEBUGF('x', "yydebug = %i\n", yydebug);
+   DEBUGF('x', "yy_flex_debug = %i\n", yy_flex_debug);
    
    return optind;
    
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
    } else {
-      cerr << "No file provided!" << endl;
+      errprintf("Error: No file provided.\n");
    }
    
    return get_exitstatus();
