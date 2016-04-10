@@ -1,5 +1,6 @@
-//djluna
+// djluna: Daniel Luna
 #include <string>
+#include <iostream>
 
 #include <libgen.h>
 #include <errno.h>
@@ -7,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wait.h>
+#include <unistd.h>
 
 #include "auxlib.h"
 
@@ -55,10 +57,55 @@ void cpplines (FILE* pipe, char* filename) {
 }
 
 
+int parse_args(int argc, char** argv) {
+   int c;
+   opterr = 0;
+   
+   while ((c = getopt(argc, argv, "@:lyD:")) != -1) {
+      switch(c) {
+         case '@':
+            set_debugflags(optarg);
+            break;
+         case 'l':
+            yydebug = 1;
+            break;
+         case 'y':
+            yy_flex_debug = 1;
+            break;
+         case 'D':
+            //Pass optarg to CPP
+            break;
+         case '?':
+            string string_optopt(char(optopt));
+            if ((optopt == 'D') || (optopt == '@')) { //We didn't get an argument for -D
+               fprintf (stderr, "Option -%c requires an argument.\n", 
+                        optopt);
+            } else if (isprint(optopt)) { //Couldn't handle an option
+               fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+            } else {
+               fprintf (stderr, "Unknown option character `\\x%x'.\n",
+                        optopt);
+            }
+            break;
+      }
+   }
+   
+   //Debug flag values
+   DEBUGF('x', "yydebug = %i\n", yydebug);
+   DEBUGF('x', "yy_flex_debug = %i\n", yy_flex_debug);
+   
+   return optind;
+   
+}
+
+
 int main(int argc, char** argv) {
    set_execname(argv[0]);
-   for (int argi = 1; argi < argc; ++argi) {
-      char* filename = argv[argi];
+   
+   int optind = parse_args(argc, argv);
+   
+   if (optind == argc - 1) {
+      char* filename = argv[optind];
       string command = CPP + " " + filename;
       printf("command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
@@ -70,8 +117,11 @@ int main(int argc, char** argv) {
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
+   } else {
+      errprintf("Error: No file provided.\n");
    }
    
+   DEBUGF('x', "Exit Status: %i\n", get_exitstatus());
    return get_exitstatus();
 }
 

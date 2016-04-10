@@ -1,4 +1,4 @@
-// $Id: main.cpp,v 1.6 2014-10-09 15:44:18-07 - - $
+// djluna: Daniel Luna
 
 /*
 #include <cstdlib>

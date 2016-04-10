@@ -1,4 +1,4 @@
-// $Id: cppstrtok.cpp,v 1.4 2016-03-24 14:34:10-07 - - $
+// djluna: Daniel Luna
 
 // Use cpp to scan a file and print line numbers.
 // Print out each input line read in, then strtok it for
