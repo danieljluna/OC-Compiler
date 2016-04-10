@@ -1,4 +1,4 @@
-// $Id: stringset.cpp,v 1.12 2016-03-24 14:33:24-07 - - $
+// djluna: Daniel Luna
 
 #include <iomanip>
 #include <unordered_set>

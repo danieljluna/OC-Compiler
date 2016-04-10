@@ -1,4 +1,4 @@
-// $Id: stringset.h,v 1.4 2014-10-09 15:42:13-07 - - $
+// djluna: Daniel Luna
 
 #ifndef __STRINGSET__
 #define __STRINGSET__

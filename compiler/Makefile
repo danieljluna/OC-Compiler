@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.11 2016-03-24 14:40:28-07 - - $
+# djluna: Daniel Luna
 
 GCC        = g++ -g -O0 -Wall -Wextra -std=gnu++14
 MKDEP      = g++ -MM -std=gnu++14

@@ -1,4 +1,4 @@
-//djluna
+// djluna: Daniel Luna
 #include <string>
 #include <iostream>
 
@@ -77,7 +77,7 @@ int parse_args(int argc, char** argv) {
             break;
          case '?':
             string string_optopt(char(optopt));
-            if (optopt == 'D') { //We didn't get an argument for -D
+            if ((optopt == 'D') || (optopt == '@')) { //We didn't get an argument for -D
                fprintf (stderr, "Option -%c requires an argument.\n", 
                         optopt);
             } else if (isprint(optopt)) { //Couldn't handle an option
