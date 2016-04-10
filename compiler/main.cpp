@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
    
    int optind = parse_args(argc, argv);
    
-   if (optind == argc) {
+   if (optind == argc - 1) {
       char* filename = argv[optind];
       string command = CPP + " " + filename;
       printf("command=\"%s\"\n", command.c_str());
@@ -117,6 +117,8 @@ int main(int argc, char** argv) {
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
+   } else {
+      cerr << "No file provided!" << endl;
    }
    
    return get_exitstatus();
