@@ -111,7 +111,7 @@ void __stubprintf (const char* file, int line, const char* func,
 void set_debugflags (const char* flags) {
    debugflags = flags;
    if (strchr (debugflags, '@') != NULL) alldebugflags = true;
-   DEBUGF ('x', "Debugflags = \"" << debugflags) << "\"");
+   DEBUGF ('x', "Debugflags = \"" << debugflags << "\"");
    DEBUGF ('x', "       all = " << alldebugflags);
 }
 
