@@ -83,13 +83,13 @@ int parse_args(int argc, char** argv) {
                         optopt);
             //If we can't handle an arg
             } else { 
-               if (isprint(optopt))
+               //If it is a readily printable char
+               if (isprint(optopt)) {
                   fprintf(stderr, "Unknown option `-%c'.\n", optopt);
-               else 
+               } else {
                   fprintf(stderr,"Unknown option character `\\x%x'.\n",
                         optopt);
-            } else {
-               
+               }
             }
             break;
       }
