@@ -57,7 +57,7 @@ void cpplines (FILE* pipe, char* filename) {
 }
 
 
-void parse_args(int argc, char** argv) {
+int parse_args(int argc, char** argv) {
    int c;
    opterr = 0;
    
@@ -94,13 +94,15 @@ void parse_args(int argc, char** argv) {
    DEBUGF('x', "yydebug = " << yydebug << endl);
    DEBUGF('x', "yy_flex_debug = " << yy_flex_debug << endl);
    
+   return optind;
+   
 }
 
 
 int main(int argc, char** argv) {
    set_execname(argv[0]);
    
-   parse_args(argc, argv);
+   int optind = parse_args(argc, argv);
    
    if (optind == argc) {
       char* filename = argv[optind];
