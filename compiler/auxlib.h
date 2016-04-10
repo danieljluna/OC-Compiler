@@ -5,6 +5,9 @@
 
 #include <stdarg.h>
 
+extern int yydebug;
+extern int yy_flex_debug;
+
 //
 // DESCRIPTION
 //    Auxiliary library containing miscellaneous useful things.
