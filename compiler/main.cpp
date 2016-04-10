@@ -91,8 +91,8 @@ void parse_args(int argc, char** argv) {
    }
    
    //Debug flag values
-   DEBUGF("x", "yydebug = " << string(yydebug) << endl);
-   DEBUGF("x", "yy_flex_debug = " << yy_flex_debug << endl);
+   DEBUGF('x', "yydebug = " << string(yydebug) << endl);
+   DEBUGF('x', "yy_flex_debug = " << yy_flex_debug << endl);
    
 }
 
@@ -102,8 +102,8 @@ int main(int argc, char** argv) {
    
    parse_args(argc, argv);
    
-   if (optind == argc)
-      char* filename = argv[argi];
+   if (optind == argc) {
+      char* filename = argv[optind];
       string command = CPP + " " + filename;
       printf("command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
