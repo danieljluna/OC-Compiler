@@ -5,9 +5,22 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_set>
 
-const std::string* intern_stringset (const char*);
+class stringSet {
+public:
 
-void dump_stringset (std::ostream&);
+   const std::string* intern_stringset (const char*);
+
+   void dump_stringset (std::ostream&);
+   
+   friend std::ostream& operator<<(const std::ostream&, 
+                                   const stringSet&);
+   
+private:
+
+   std::unordered_set<std::string> stringset;
+
+};
 
 #endif
