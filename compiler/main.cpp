@@ -15,9 +15,10 @@ using namespace std;
 const string CPP = "/usr/bin/cpp";
 
 
-int parse_args(int argc, char** argv) {
+string parse_args(int argc, char** argv) {
    int c;
    opterr = 0;
+   string cppArgs = "";
    
    while ((c = getopt(argc, argv, "@:lyD:")) != -1) {
       switch(c) {
@@ -31,7 +32,7 @@ int parse_args(int argc, char** argv) {
             yy_flex_debug = 1;
             break;
          case 'D':
-            //Pass optarg to CPP
+            cppArgs += " -D" + string(optarg);
             break;
          case '?':
             string string_optopt(char(optopt));
@@ -57,7 +58,7 @@ int parse_args(int argc, char** argv) {
    DEBUGF('x', "yydebug = %i\n", yydebug);
    DEBUGF('x', "yy_flex_debug = %i\n", yy_flex_debug);
    
-   return optind;
+   return cppArgs;
    
 }
 
@@ -65,11 +66,11 @@ int parse_args(int argc, char** argv) {
 int main(int argc, char** argv) {
    set_execname(argv[0]);
    
-   int optind = parse_args(argc, argv);
+   string cpp_opts = parse_args(argc, argv);
    
    if (optind == argc - 1) {
       char* filename = argv[optind];
-      string command = CPP + " " + filename;
+      string command = CPP + " " + filename + cpp_opts;
       printf("command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
       if (pipe == NULL) {
