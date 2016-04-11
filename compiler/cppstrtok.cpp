@@ -8,6 +8,8 @@
 #include <wait.h>
 #include <unistd.h>
 
+using namespace std;
+
 constexpr size_t LINESIZE = 1024;
 
 // Chomp the last character from a buffer if it is delim.

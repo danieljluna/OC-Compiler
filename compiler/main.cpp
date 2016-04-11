@@ -1,8 +1,10 @@
 // djluna: Daniel Luna
 
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <unistd.h>
 
 #include "auxlib.h"
