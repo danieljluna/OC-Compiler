@@ -12,7 +12,7 @@ public:
 
    const std::string* intern_stringset (const char*);
 
-   void dump_stringset (std::ostream&);
+   void dump_stringset (std::ostream&) const;
    
    friend std::ostream& operator<<(std::ostream&, 
                                    const stringSet&);

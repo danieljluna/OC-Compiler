@@ -12,7 +12,7 @@ const string* stringSet::intern_stringset (const char* string) {
    return &*handle.first;
 }
 
-void stringSet::dump_stringset (ostream& out) {
+void stringSet::dump_stringset (ostream& out) const {
    size_t max_bucket_size = 0;
    for (size_t bucket = 0; bucket < set.bucket_count(); ++bucket) {
       bool need_index = true;
