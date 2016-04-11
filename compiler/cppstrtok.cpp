@@ -1,24 +1,13 @@
 // djluna: Daniel Luna
 
-// Use cpp to scan a file and print line numbers.
-// Print out each input line read in, then strtok it for
-// tokens.
-
-/*
-
-#include <string>
-using namespace std;
- 
-#include <errno.h>
 #include <libgen.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wait.h>
+#include <unistd.h>
 
-#include "auxlib.h"
-
-const string CPP = "/usr/bin/cpp";
 constexpr size_t LINESIZE = 1024;
 
 // Chomp the last character from a buffer if it is delim.
@@ -59,25 +48,3 @@ void cpplines (FILE* pipe, char* filename) {
       ++linenr;
    }
 }
-
-
-
-int main (int argc, char** argv) {
-   set_execname (argv[0]);
-   for (int argi = 1; argi < argc; ++argi) {
-      char* filename = argv[argi];
-      string command = CPP + " " + filename;
-      printf ("command=\"%s\"\n", command.c_str());
-      FILE* pipe = popen (command.c_str(), "r");
-      if (pipe == NULL) {
-         syserrprintf (command.c_str());
-      }else {
-         cpplines (pipe, filename);
-         int pclose_rc = pclose (pipe);
-         eprint_status (command.c_str(), pclose_rc);
-         if (pclose_rc != 0) set_exitstatus (EXIT_FAILURE);
-      }
-   }
-   return get_exitstatus();
-}
-*/
