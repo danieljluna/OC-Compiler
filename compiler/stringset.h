@@ -19,7 +19,7 @@ public:
    
 private:
 
-   std::unordered_set<std::string> stringset;
+   std::unordered_set<std::string> set;
 
 };
 

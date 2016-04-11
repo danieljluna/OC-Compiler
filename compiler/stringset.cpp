@@ -5,12 +5,10 @@ using namespace std;
 
 #include "stringset.h"
 
-using stringset = unordered_set<string>;
-
-stringset set;
+using str_set = unordered_set<string>;
 
 const string* stringSet::intern_stringset (const char* string) {
-   pair<stringset::const_iterator,bool> handle = set.insert (string);
+   pair<str_set::const_iterator,bool> handle = insert(string);
    return &*handle.first;
 }
 
@@ -19,8 +17,8 @@ void stringSet::dump_stringset (ostream& out) {
    for (size_t bucket = 0; bucket < set.bucket_count(); ++bucket) {
       bool need_index = true;
       size_t curr_size = set.bucket_size (bucket);
-      if (max_bucket_size < curr_size) max_bucket_size = curr_size;
-      for (stringset::const_local_iterator itor = set.cbegin (bucket);
+      if (max_bucket_size < curr_size) {max_bucket_size = curr_size;}
+      for (str_set::const_local_iterator itor = set.cbegin(bucket);
            itor != set.cend (bucket); ++itor) {
          if (need_index) out << "hash[" << setw(4) << bucket
                              << "]: ";
