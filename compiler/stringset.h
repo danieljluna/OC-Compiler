@@ -14,7 +14,7 @@ public:
 
    void dump_stringset (std::ostream&);
    
-   friend std::ostream& operator<<(const std::ostream&, 
+   friend std::ostream& operator<<(std::ostream&, 
                                    const stringSet&);
    
 private:

@@ -8,7 +8,7 @@ using namespace std;
 using str_set = unordered_set<string>;
 
 const string* stringSet::intern_stringset (const char* string) {
-   pair<str_set::const_iterator,bool> handle = insert(string);
+   pair<str_set::const_iterator,bool> handle = set.insert(string);
    return &*handle.first;
 }
 
@@ -38,7 +38,9 @@ void stringSet::dump_stringset (ostream& out) {
 
 
 
-std::ostream& operator<<(const ostream& out,
+std::ostream& operator<<(ostream& out,
                          const stringSet& strSet) {
    strSet.dump_stringset(out);
+   
+   return out;
 }
