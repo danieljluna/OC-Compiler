@@ -69,10 +69,11 @@ int main(int argc, char** argv) {
    set_execname(argv[0]);
    string cpp_opts = parse_args(argc, argv);
    
+   string filename;
    stringSet tokens;
    
    if (optind == argc - 1) {
-      char* filename = argv[optind];
+      filename = argv[optind];
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
