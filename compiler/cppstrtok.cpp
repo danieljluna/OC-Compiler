@@ -51,7 +51,10 @@ stringSet cpplines (FILE* pipe, char* filename) {
          if (token == NULL) break;
          DEBUGF('P', "token %d.%d: [%s]\n",
                  linenr, tokenct, token);
+         strSet.intern_stringset(token);
       }
       ++linenr;
    }
+   
+   return strSet;
 }
