@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
    stringSet tokens;
    
    if (optind == argc - 1) {
-      filename = argv[optind];
+      filename = string(argv[optind]);
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
