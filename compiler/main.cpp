@@ -6,6 +6,8 @@
 #include <string.h>
 #include <string>
 #include <unistd.h>
+#include <iostream>
+#include <fstream>
 
 #include "auxlib.h"
 #include "cppstrtok.h"
@@ -65,22 +67,31 @@ string parse_args(int argc, char** argv) {
 
 int main(int argc, char** argv) {
    set_execname(argv[0]);
-   
    string cpp_opts = parse_args(argc, argv);
    
+   strSet tokens;
+   char* filename;
+   
    if (optind == argc - 1) {
-      char* filename = argv[optind];
+      filename = argv[optind];
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
       if (pipe == NULL) {
          syserrprintf(command.c_str());
       } else {
-         cpplines(pipe, filename);
+         tokens = cpplines(pipe, filename);
          int pclose_rc = pclose(pipe);
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
+      
+      ofstream file;
+      string outputFilename(get_execname());
+      file.open(outputFilename + ".str");
+      file << tokens;
+      file.close();
+      
    } else {
       errprintf("Error: No file provided.\n");
    }
