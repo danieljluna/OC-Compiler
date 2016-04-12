@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
    set_execname(argv[0]);
    string cpp_opts = parse_args(argc, argv);
    
-   strSet tokens;
+   stringSet tokens;
    char* filename;
    
    if (optind == argc - 1) {
