@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
       }
       
       ofstream file;
-      file.open(filename + ".str");
+      file.open(string(filename) + ".str");
       file << tokens;
       file.close();
       
