@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
    if (optind == argc - 1) {
       char* filename = argv[optind];
       string command = CPP + " " + filename + cpp_opts;
-      printf("command=\"%s\"\n", command.c_str());
+      DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
       if (pipe == NULL) {
          syserrprintf(command.c_str());
