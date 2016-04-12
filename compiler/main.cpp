@@ -69,27 +69,27 @@ int main(int argc, char** argv) {
    set_execname(argv[0]);
    string cpp_opts = parse_args(argc, argv);
    
-   string filename;
    stringSet tokens;
    
    if (optind == argc - 1) {
-      filename = string(argv[optind]);
+      char* filename = argv[optind];
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
       if (pipe == NULL) {
          syserrprintf(command.c_str());
       } else {
-         tokens = cpplines(pipe, filename.c_str());
+         tokens = cpplines(pipe, filename);
          int pclose_rc = pclose(pipe);
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
       
       ofstream file;
-      filename = filename.substr(0, filename.find("."));
+      string outputName(filename);
+      outputName = outputName.substr(0, outputName.find("."));
       
-      file.open(string(filename) + ".str");
+      file.open(outputName + ".str");
       file << tokens;
       file.close();
       
