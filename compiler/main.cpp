@@ -70,10 +70,9 @@ int main(int argc, char** argv) {
    string cpp_opts = parse_args(argc, argv);
    
    stringSet tokens;
-   char* filename;
    
    if (optind == argc - 1) {
-      filename = argv[optind];
+      char* filename = argv[optind];
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* pipe = popen(command.c_str(), "r");
@@ -87,8 +86,7 @@ int main(int argc, char** argv) {
       }
       
       ofstream file;
-      string outputFilename(get_execname());
-      file.open(outputFilename + ".str");
+      file.open(filename + ".str");
       file << tokens;
       file.close();
       
