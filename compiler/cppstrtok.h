@@ -8,5 +8,5 @@ void chomp (char* string, char delim);
 
 
 // Run cpp against the lines of the file.
-stringset cpplines (FILE* pipe, char* filename);
+stringSet cpplines (FILE* pipe, char* filename);
 

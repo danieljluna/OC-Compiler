@@ -23,10 +23,12 @@ void chomp (char* string, char delim) {
 }
 
 // Run cpp against the lines of the file.
-stringset cpplines (FILE* pipe, char* filename) {
+stringSet cpplines (FILE* pipe, char* filename) {
    int linenr = 1;
    char inputname[LINESIZE];
    strcpy (inputname, filename);
+   stringSet strSet;
+   
    for (;;) {
       char buffer[LINESIZE];
       char* fgets_rc = fgets (buffer, LINESIZE, pipe);
