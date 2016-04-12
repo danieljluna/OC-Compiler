@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
       if (pipe == NULL) {
          syserrprintf(command.c_str());
       } else {
-         tokens = cpplines(pipe, filename);
+         tokens = cpplines(pipe, filename.c_str());
          int pclose_rc = pclose(pipe);
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
