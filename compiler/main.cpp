@@ -83,15 +83,15 @@ int main(int argc, char** argv) {
          int pclose_rc = pclose(pipe);
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
+                  
+         ofstream file;
+         string outputName(filename);
+         outputName = outputName.substr(0, outputName.find("."));
+         
+         file.open(outputName + ".str");
+         file << tokens;
+         file.close();
       }
-      
-      ofstream file;
-      string outputName(filename);
-      outputName = outputName.substr(0, outputName.find("."));
-      
-      file.open(outputName + ".str");
-      file << tokens;
-      file.close();
       
    } else {
       errprintf("Error: No file provided.\n");
