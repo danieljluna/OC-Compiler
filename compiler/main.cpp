@@ -85,13 +85,15 @@ int main(int argc, char** argv) {
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
       
-      ofstream file;
-      string outputName(filename);
-      outputName = outputName.substr(0, outputName.find("."));
-      
-      file.open(outputName + ".str");
-      file << tokens;
-      file.close();
+      if (get_exitstatus() == 0) {
+         ofstream file;
+         string outputName(filename);
+         outputName = outputName.substr(0, outputName.find("."));
+         
+         file.open(outputName + ".str");
+         file << tokens;
+         file.close();
+      }
       
    } else {
       errprintf("Error: No file provided.\n");
