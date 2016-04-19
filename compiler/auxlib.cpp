@@ -1,4 +1,4 @@
-// $Id: auxlib.cpp,v 1.3 2015-10-01 18:15:04-07 - - $
+// djluna: Daniel Luna
 
 #include <assert.h>
 #include <errno.h>
@@ -11,6 +11,9 @@
 #include <wait.h>
 
 #include "auxlib.h"
+
+int yydebug = 0;
+int yy_flex_debug = 0;
 
 static int exitstatus = EXIT_SUCCESS;
 static const char* execname = NULL;

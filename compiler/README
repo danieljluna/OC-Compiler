@@ -1,0 +1,27 @@
+Daniel Luna: djluna
+
+oc - Final Executable. Runs the C Pre-Processor on the oc programs
+   as well as tokenizing the strings in a .str file.
+
+auxlib.h - Declares generic functionality relating to debugging and
+   executable information.
+
+auxlib.cpp - Defines generic functionality relating to debugging and
+   executable information.
+
+cppstrtok.h - Declares functionality to call CPP.
+
+cppstrtok.cpp - Defines functionality to call CPP.
+
+main.cpp - Defines a stack class built from a vector.
+
+stingset.h - Declares stringSet class to manage a hash table of 
+   strings.
+   
+stingset.cpp - Defines stringSet class to manage a hash table of 
+   strings.
+
+README - Summarizes the files required for ydc.
+
+Makefile - Used to assemble the files into an executable ydc via .o 
+            files. Also has clean utility.

@@ -1,9 +1,12 @@
-// $Id: auxlib.h,v 1.2 2015-10-01 18:15:04-07 - - $
+// djluna: Daniel Luna
 
 #ifndef __AUXLIB_H__
 #define __AUXLIB_H__
 
 #include <stdarg.h>
+
+extern int yydebug;
+extern int yy_flex_debug;
 
 //
 // DESCRIPTION
