@@ -1,3 +1,5 @@
+// djluna: Daniel Luna
+
 #ifndef __LYUTILS_H__
 #define __LYUTILS_H__
 
