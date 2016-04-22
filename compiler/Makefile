@@ -9,7 +9,7 @@ GRIND     = valgrind --leak-check=full --show-reachable=yes
 FLEX      = flex --header-file=${LEXHDR} --outfile=${LEXCPP}
 BISON     = bison --defines=${PARSEHDR} --output=${PARSECPP}
 
-MODULES   = astree utils stringset emitter syslib
+MODULES   = astree lyutils stringset emitter syslib
 HDRSRC    = ${MODULES:=.h}
 CPPSRC    = ${MODULES:=.cpp} main.cpp
 FLEXSRC   = lexer.l
