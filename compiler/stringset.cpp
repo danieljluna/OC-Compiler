@@ -7,12 +7,12 @@ using namespace std;
 
 using str_set = unordered_set<string>;
 
-const string* stringSet::intern_stringset (const char* string) {
+const string* stringSet::insert(const char* string) {
    pair<str_set::const_iterator,bool> handle = set.insert(string);
    return &*handle.first;
 }
 
-void stringSet::dump_stringset (ostream& out) const {
+void stringSet::dump (ostream& out) const {
    size_t max_bucket_size = 0;
    for (size_t bucket = 0; bucket < set.bucket_count(); ++bucket) {
       bool need_index = true;
@@ -40,7 +40,7 @@ void stringSet::dump_stringset (ostream& out) const {
 
 std::ostream& operator<<(ostream& out,
                          const stringSet& strSet) {
-   strSet.dump_stringset(out);
+   strSet.dump(out);
    
    return out;
 }

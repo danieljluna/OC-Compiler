@@ -10,6 +10,7 @@
 #include <fstream>
 
 #include "auxlib.h"
+#include "lyutils.h"
 #include "cppstrtok.h"
 
 using namespace std;

@@ -40,7 +40,6 @@ token   : '(' | ')' | '[' | ']' | '{' | '}' | ';' | ',' | '.'
         ;
 
 %%
-
 
 const char *get_yytname (int symbol) {
    return yytname [YYTRANSLATE (symbol)];

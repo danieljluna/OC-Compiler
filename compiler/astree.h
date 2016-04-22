@@ -8,6 +8,7 @@
 using namespace std;
 
 #include "auxlib.h"
+#include "stringset.h"
 
 struct astree {
    int symbol;               // token code
@@ -18,6 +19,8 @@ struct astree {
    vector<astree*> children; // children of this n-way node
    astree (int symbol, int filenr, int linenr,
            int offset, const char* clexinfo);
+		   
+   static stringSet strSet;
 };
 
 // Append one child to the vector of children.

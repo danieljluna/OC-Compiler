@@ -10,9 +10,11 @@
 class stringSet {
 public:
 
-   const std::string* intern_stringset (const char*);
+   //Replaces intern_stringset for name simplicity
+   const std::string* insert(const char*);
 
-   void dump_stringset (std::ostream&) const;
+   //Replaces dump_stringset for name simplicity
+   void dump (std::ostream&) const;
    
    friend std::ostream& operator<<(std::ostream&, 
                                    const stringSet&);

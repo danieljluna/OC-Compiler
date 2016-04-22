@@ -12,9 +12,6 @@
 
 #include "auxlib.h"
 
-int yydebug = 0;
-int yy_flex_debug = 0;
-
 static int exitstatus = EXIT_SUCCESS;
 static const char* execname = NULL;
 static const char* debugflags = "";
