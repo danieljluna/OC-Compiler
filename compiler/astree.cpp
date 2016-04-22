@@ -33,7 +33,6 @@ astree* adopt2 (astree* root, astree* left, astree* right) {
    return root;
 }
 
-
 static void dump_node (FILE* outfile, astree* node) {
    fprintf (outfile, "%p->{%s(%d) %ld:%ld.%03ld \"%s\" [",
             node, get_yytname (node->symbol), node->symbol,
@@ -79,7 +78,6 @@ void yyprint (FILE* outfile, unsigned short toknum,
    fflush (NULL);
 }
 
-
 void free_ast (astree* root) {
    while (not root->children.empty()) {
       astree* child = root->children.back();

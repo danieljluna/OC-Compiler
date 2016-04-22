@@ -35,7 +35,6 @@ void lexer_setecho (bool echoflag) {
    scan_echo = echoflag;
 }
 
-
 void lexer_useraction (void) {
    if (scan_echo) {
       if (scan_offset == 0) printf (";%5d: ", scan_linenr);
@@ -77,7 +76,6 @@ astree* new_parseroot (void) {
    return yyparse_astree;
 }
 
-
 void lexer_include (void) {
    lexer_newline();
    char filename[strlen (yytext) + 1];
