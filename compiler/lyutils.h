@@ -12,13 +12,15 @@
 
 #define YYEOF 0
 
+typedef size_t yy_size_t;
+
 extern FILE* yyin;
 extern astree* yyparse_astree;
 extern int yyin_linenr;
 extern char* yytext;
 extern int yy_flex_debug;
 extern int yydebug;
-extern int yyleng;
+extern yy_size_t yyleng;
 
 int yylex (void);
 int yyparse (void);
