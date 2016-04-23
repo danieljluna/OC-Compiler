@@ -1,46 +1,39 @@
 // djluna: Daniel Luna
 
-#include <iomanip>
+#include <string>
+#include <unordered_set>
 using namespace std;
 
 #include "stringset.h"
 
-using str_set = unordered_set<string>;
+unordered_set<string> stringset::set;
 
-const string* stringSet::intern_stringset (const char* string) {
-   pair<str_set::const_iterator,bool> handle = set.insert(string);
+stringset::stringset() {
+   set.max_load_factor (0.5);
+}
+
+const string* stringset::intern (const char* string) {
+   auto handle = set.insert (string);
    return &*handle.first;
 }
 
-void stringSet::dump_stringset (ostream& out) const {
+void stringset::dump (FILE* out) {
    size_t max_bucket_size = 0;
    for (size_t bucket = 0; bucket < set.bucket_count(); ++bucket) {
       bool need_index = true;
       size_t curr_size = set.bucket_size (bucket);
-      if (max_bucket_size < curr_size) {max_bucket_size = curr_size;}
-      for (str_set::const_local_iterator itor = set.cbegin(bucket);
+      if (max_bucket_size < curr_size) max_bucket_size = curr_size;
+      for (auto itor = set.cbegin (bucket);
            itor != set.cend (bucket); ++itor) {
-         if (need_index) out << "hash[" << setw(4) << bucket
-                             << "]: ";
-                    else out << setw(12) << "";
+         if (need_index) fprintf (out, "stringset[%4zu]: ", bucket);
+                    else fprintf (out, "          %4s   ", "");
          need_index = false;
          const string* str = &*itor;
-         out << setw(20) << set.hash_function()(*str) << ": "
-             << str << "->\"" << *str << "\"" << endl;
+         fprintf (out, "%22zu %p->\"%s\"\n", set.hash_function()(*str),
+                  str, str->c_str());
       }
    }
-   out << "load_factor = " << fixed << setprecision(3)
-       << set.load_factor() << endl;
-   out << "bucket_count = " << set.bucket_count() << endl;
-   out << "max_bucket_size = " << max_bucket_size << endl;
-}
-
-
-
-
-std::ostream& operator<<(ostream& out,
-                         const stringSet& strSet) {
-   strSet.dump_stringset(out);
-   
-   return out;
+   fprintf (out, "load_factor = %.3f\n", set.load_factor());
+   fprintf (out, "bucket_count = %zu\n", set.bucket_count());
+   fprintf (out, "max_bucket_size = %zu\n", max_bucket_size);
 }

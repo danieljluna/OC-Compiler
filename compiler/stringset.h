@@ -3,24 +3,19 @@
 #ifndef __STRINGSET__
 #define __STRINGSET__
 
-#include <iostream>
 #include <string>
 #include <unordered_set>
+using namespace std;
 
-class stringSet {
-public:
+#include <stdio.h>
 
-   const std::string* intern_stringset (const char*);
+#include "auxlib.h"
 
-   void dump_stringset (std::ostream&) const;
-   
-   friend std::ostream& operator<<(std::ostream&, 
-                                   const stringSet&);
-   
-private:
-
-   std::unordered_set<std::string> set;
-
+struct stringset {
+   stringset();
+   static unordered_set<string> set;
+   static const string* intern (const char*);
+   static void dump (FILE*);
 };
 
 #endif
