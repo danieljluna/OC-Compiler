@@ -13,9 +13,11 @@ using namespace std;
 
 #include "astree.h"
 #include "auxlib.h"
+#include <stdio.h>
 
 extern int yy_flex_debug;
 extern int yydebug;
+extern FILE* yyin;
 
 int yylex();
 void yyerror (const char* message);

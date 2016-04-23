@@ -1,2 +1,1 @@
-#include "nofile.h"
 a = b + c;
