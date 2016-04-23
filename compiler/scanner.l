@@ -16,11 +16,10 @@
 %option 8bit
 %option debug
 %option nodefault
-%option noinput
 %option nounput
 %option noyywrap
-%option warn
 /*%option verbose*/
+%option warn
 
 LETTER          [A-Za-z_]
 DIGIT           [0-9]

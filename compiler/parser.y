@@ -19,6 +19,7 @@
 %token TOK_FALSE TOK_TRUE TOK_NULL TOK_NEW TOK_ARRAY
 %token TOK_EQ TOK_NE TOK_LT TOK_LE TOK_GT TOK_GE
 %token TOK_IDENT TOK_INTCON TOK_CHARCON TOK_STRINGCON
+%token NUMBER IDENT
 
 %token TOK_BLOCK TOK_CALL TOK_IFELSE TOK_INITDECL
 %token TOK_POS TOK_NEG TOK_NEWARRAY TOK_TYPEID TOK_FIELD
@@ -41,7 +42,7 @@ token   : '(' | ')' | '[' | ']' | '{' | '}' | ';' | ',' | '.'
 
 %%
 
-const char *get_yytname (int symbol) {
+const char* parser::get_tname (int symbol) {
    return yytname [YYTRANSLATE (symbol)];
 }
 

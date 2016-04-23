@@ -6,8 +6,6 @@
 #include <string.h>
 #include <string>
 #include <unistd.h>
-#include <iostream>
-#include <fstream>
 
 #include "auxlib.h"
 #include "lyutils.h"
@@ -70,8 +68,6 @@ int main(int argc, char** argv) {
    set_execname(argv[0]);
    string cpp_opts = parse_args(argc, argv);
    
-   stringSet tokens;
-   
    if (optind == argc - 1) {
       char* filename = argv[optind];
       string command = CPP + " " + filename + cpp_opts;
@@ -80,20 +76,20 @@ int main(int argc, char** argv) {
       if (pipe == NULL) {
          syserrprintf(command.c_str());
       } else {
-         tokens = cpplines(pipe, filename);
+         cpplines(pipe, filename);
          int pclose_rc = pclose(pipe);
          eprint_status(command.c_str(), pclose_rc);
          if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
       
       if (get_exitstatus() == 0) {
-         ofstream file;
+         FILE* file;
          string outputName(filename);
          outputName = outputName.substr(0, outputName.find("."));
-         
-         file.open(outputName + ".str");
-         file << tokens;
-         file.close();
+         outputName += ".str";
+         file = fopen(outputName.c_str(), "w");
+         stringset::dump(file);
+         fclose(file);
       }
       
    } else {

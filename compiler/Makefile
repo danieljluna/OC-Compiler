@@ -12,7 +12,7 @@ BISON     = bison --defines=${PARSEHDR} --output=${PARSECPP}
 MODULES   = astree auxlib cppstrtok lyutils stringset
 HDRSRC    = ${MODULES:=.h}
 CPPSRC    = ${MODULES:=.cpp} main.cpp
-FLEXSRC   = lexer.l
+FLEXSRC   = scanner.l
 BISONSRC  = parser.y
 LEXHDR    = yylex.h
 PARSEHDR  = yyparse.h
