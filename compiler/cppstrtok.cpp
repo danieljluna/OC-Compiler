@@ -55,4 +55,15 @@ void cpplines (FILE* pipe, char* filename) {
       ++linenr;
    }
    
+   
+   //Print .str
+   FILE* file;
+   string outputName(filename);
+   outputName = outputName.substr(0, outputName.find("."));
+   DEBUGF('o', "Generating .str...");
+   string strName = outputName + ".str";
+   file = fopen(strName.c_str(), "w");
+   stringset::dump(file);
+   fclose(file);
+   
 }

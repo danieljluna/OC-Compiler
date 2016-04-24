@@ -68,47 +68,30 @@ int main(int argc, char** argv) {
    set_execname(argv[0]);
    string cpp_opts = parse_args(argc, argv);
    
+   
    //If we were given a file
    if (optind == argc - 1) {
       char* filename = argv[optind];
+      
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
       FILE* cppFile = popen(command.c_str(), "r");
+      
+      //If we could pipe into cpp:
       if (cppFile == NULL) {
          syserrprintf(command.c_str());
          exit(get_exitstatus());
       } else {
+         //Generate .str file
          cpplines(cppFile, filename);
          pclose(cppFile);
+         
+         //Generate .tok file
          yyin = popen(command.c_str(), "r");
          lexer::newfilename(command);
-         int parse_rc = yyparse();
-         DEBUGF('l', "%i", parse_rc);
-         int pclose_rc = pclose(yyin);
-         eprint_status(command.c_str(), pclose_rc);
-         if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
-      }
-      
-      //If we aren't failing, print out files
-      if (get_exitstatus() == 0) {
-         FILE* file;
-         string outputName(filename);
-         outputName = outputName.substr(0, outputName.find("."));
-         
-         //Print .str
-         DEBUGF('o', "Generating .str...");
-         string strName = outputName + ".str";
-         file = fopen(strName.c_str(), "w");
-         stringset::dump(file);
-         fclose(file);
-         
-         //Print .tok
-         DEBUGF('o', "Generating .tok...");
-         string tokName = outputName + ".tok";
-         file = fopen(tokName.c_str(), "w");
-         astree::print(file, parser::root);
-         fclose(file);
-         
+         int lclose_rc = lexer::scan(filename);
+         eprint_status(command.c_str(), lclose_rc);
+         if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
       
       

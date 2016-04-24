@@ -1,4 +1,4 @@
-/* $Id: lexer.l,v 1.4 2015-11-13 13:50:39-08 - - $ */
+/* djluna: Daniel Luna */
 
 %{
 
