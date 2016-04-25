@@ -72,6 +72,29 @@ void lexer::include() {
    }
 }
 
+
+int lexer::scan (const char* file) {
+   //Generate .tok file
+   string outputName(file);
+   outputName = outputName.substr(0, outputName.find("."));
+   string tokName = outputName + ".tok";
+   FILE* outFile = fopen(tokName.c_str(), "w");
+   int symbol = 0;
+   
+   //Start Scan Loop
+   while ((symbol = yylex())) {
+      if (symbol == 0) {
+         break;
+      } else {
+         //Dump all symbols
+         astree::dump(outFile, yylval);
+         fprintf(outFile, "\n");
+      }
+   }
+   
+   return pclose(yyin);
+}
+
 void yyerror (const char* message) {
    assert (not lexer::filenames.empty());
    errllocprintf (lexer::lloc, "%s\n", message);

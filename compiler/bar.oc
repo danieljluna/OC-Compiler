@@ -1,2 +1,2 @@
-#include "nofile.h"
 a = b + c;
+void array[] = {a, b, c};

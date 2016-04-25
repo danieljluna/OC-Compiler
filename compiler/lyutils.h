@@ -13,9 +13,11 @@ using namespace std;
 
 #include "astree.h"
 #include "auxlib.h"
+#include <stdio.h>
 
 extern int yy_flex_debug;
 extern int yydebug;
+extern FILE* yyin;
 
 int yylex();
 void yyerror (const char* message);
@@ -32,6 +34,8 @@ struct lexer {
    static void badchar (unsigned char bad);
    static void badtoken (char* lexeme);
    static void include();
+   
+   static int scan(const char* filename);
 };
 
 struct parser {

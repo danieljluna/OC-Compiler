@@ -1,4 +1,4 @@
-/* $Id: lexer.l,v 1.4 2015-11-13 13:50:39-08 - - $ */
+/* djluna: Daniel Luna */
 
 %{
 
@@ -18,36 +18,66 @@
 %option nodefault
 %option nounput
 %option noyywrap
-/*%option verbose*/
+%option verbose
 %option warn
 
 LETTER          [A-Za-z_]
 DIGIT           [0-9]
-MANTISSA        ({DIGIT}+\.?{DIGIT}*|\.{DIGIT}+)
-EXPONENT        ([Ee][+-]?{DIGIT}+)
-NUMBER          ({MANTISSA}{EXPONENT}?)
-NOTNUMBER       ({MANTISSA}[Ee][+-]?)
+ARRAY           \[\]
 IDENT           ({LETTER}({LETTER}|{DIGIT})*)
+BADIDENT        ({DIGIT}({LETTER}|{DIGIT})*)
+INT_CONST       ({DIGIT}+)
+CHAR_CONST      ('([^\\"\n]|\\[\\'"0nt])')
+STRING_CONST    (\"([^\\"\n]|\\[\\’"0nt])*\")
+
 
 %%
 
 "#".*           { lexer::include(); }
-[ \t]+          { }
+[ \t]+          { /* Skip whitespace. */ }
 \n              { lexer::newline(); }
 
-{NUMBER}        { RETURN (NUMBER); }
-{IDENT}         { RETURN (IDENT); }
+"("             { RETURN ('('); }
+")"             { RETURN (')'); }
+"["             { RETURN ('['); }
+"]"             { RETURN (']'); }
+{ARRAY}         { RETURN (TOK_ARRAY); }
+"{"             { RETURN ('{'); }
+"}"             { RETURN ('}'); }
+";"             { RETURN (';'); }
+","             { RETURN (','); }
+"."             { RETURN ('.'); }
 "="             { RETURN ('='); }
 "+"             { RETURN ('+'); }
 "-"             { RETURN ('-'); }
 "*"             { RETURN ('*'); }
 "/"             { RETURN ('/'); }
-"^"             { RETURN ('^'); }
-"("             { RETURN ('('); }
-")"             { RETURN (')'); }
-";"             { RETURN (';'); }
+"%"             { RETURN ('%'); }
+"!"             { RETURN ('!'); }
 
-{NOTNUMBER}     { lexer::badtoken (yytext); RETURN (NUMBER); }
+"void"          { RETURN (TOK_VOID); }
+"bool"          { RETURN (TOK_BOOL); }
+"char"          { RETURN (TOK_CHAR); }
+"int"           { RETURN (TOK_INT); }
+"string"        { RETURN (TOK_STRING); }
+"if"            { RETURN (TOK_IF); }
+"else"          { RETURN (TOK_ELSE); }
+"while"         { RETURN (TOK_WHILE); }
+"return"        { RETURN (TOK_RETURN); }
+"struct"        { RETURN (TOK_STRUCT); }
+"false"         { RETURN (TOK_FALSE); }
+"true"          { RETURN (TOK_TRUE); }
+"null"          { RETURN (TOK_NULL); }
+"new"           { RETURN (TOK_NEW); }
+"ord"           { RETURN (TOK_ORD); }
+"chr"           { RETURN (TOK_CHR); }
+
+{IDENT}         { RETURN (TOK_IDENT); }
+{INT_CONST}     { RETURN (TOK_INTCON); }
+{CHAR_CONST}    { RETURN (TOK_CHARCON); }
+{STRING_CONST}  { RETURN (TOK_STRINGCON); }
+
+
 .               { lexer::badchar (*yytext); }
 
 %%
