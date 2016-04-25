@@ -8,6 +8,7 @@
 using namespace std;
 
 #include "auxlib.h"
+#include "stringset.h"
 
 struct location {
    size_t filenr;
