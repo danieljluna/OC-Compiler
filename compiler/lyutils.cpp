@@ -1,7 +1,4 @@
-
-#include <vector>
-#include <string>
-using namespace std;
+// djluna: Daniel Luna
 
 #include <assert.h>
 #include <ctype.h>
@@ -9,90 +6,96 @@ using namespace std;
 #include <stdlib.h>
 #include <string.h>
 
-#include "lyutils.h"
-// djluna: Daniel Luna
-
 #include "auxlib.h"
+#include "lyutils.h"
+#include "yylex.h"
 
-astree* yyparse_astree = NULL;
-int scan_linenr = 1;
-int scan_offset = 0;
-bool scan_echo = false;
-vector<string> included_filenames;
+bool lexer::interactive = true;
+location lexer::lloc = {0, 1, 0};
+size_t lexer::last_yyleng = 0;
+vector<string> lexer::filenames;
 
-const string* lexer_filename (int filenr) {
-   return &included_filenames.at(filenr);
+astree* parser::root = nullptr;
+
+const string* lexer::filename (int filenr) {
+   return &lexer::filenames.at(filenr);
 }
 
-void lexer_newfilename (const char* filename) {
-   included_filenames.push_back (filename);
+void lexer::newfilename (const string& filename) {
+   lexer::lloc.filenr = lexer::filenames.size();
+   lexer::filenames.push_back (filename);
 }
 
-void lexer_newline (void) {
-   ++scan_linenr;
-   scan_offset = 0;
-}
-
-void lexer_setecho (bool echoflag) {
-   scan_echo = echoflag;
-}
-
-void lexer_useraction (void) {
-   if (scan_echo) {
-      if (scan_offset == 0) printf (";%5d: ", scan_linenr);
+void lexer::advance() {
+   if (not interactive) {
+      if (lexer::lloc.offset == 0) {
+         printf (";%2zd.%3zd: ",
+                 lexer::lloc.filenr, lexer::lloc.linenr);
+      }
       printf ("%s", yytext);
    }
-   scan_offset += yyleng;
+   lexer::lloc.offset += last_yyleng;
+   last_yyleng = yyleng;
+}
+
+void lexer::newline() {
+   ++lexer::lloc.linenr;
+   lexer::lloc.offset = 0;
+}
+
+void lexer::badchar (unsigned char bad) {
+   char buffer[16];
+   snprintf (buffer, sizeof buffer,
+             isgraph (bad) ? "%c" : "\\%03o", bad);
+   errllocprintf (lexer::lloc, "invalid source character (%s)\n",
+                  buffer);
+}
+
+void lexer::badtoken (char* lexeme) {
+   errllocprintf (lexer::lloc, "invalid token (%s)\n", lexeme);
+}
+
+void lexer::include() {
+   size_t linenr;
+   static char filename[0x1000];
+   assert (sizeof filename > strlen (yytext));
+   int scan_rc = sscanf(yytext, "# %zd \"%[^\"]\"", &linenr, filename);
+   if (scan_rc != 2) {
+      errprintf ("%s: invalid directive, ignored\n", yytext);
+   }else {
+      if (yy_flex_debug) {
+         fprintf (stderr, "--included # %zd \"%s\"\n",
+                  linenr, filename);
+      }
+      lexer::lloc.linenr = linenr - 1;
+      lexer::newfilename (filename);
+   }
+}
+
+
+int lexer::scan (const char* file) {
+   //Generate .tok file
+   string outputName(file);
+   outputName = outputName.substr(0, outputName.find("."));
+   string tokName = outputName + ".tok";
+   FILE* outFile = fopen(tokName.c_str(), "w");
+   int symbol = 0;
+   
+   //Start Scan Loop
+   while ((symbol = yylex())) {
+      if (symbol == 0) {
+         break;
+      } else {
+         //Dump all symbols
+         astree::dump(outFile, yylval);
+         fprintf(outFile, "\n");
+      }
+   }
+   
+   return pclose(yyin);
 }
 
 void yyerror (const char* message) {
-   assert (not included_filenames.empty());
-   errprintf ("%:%s: %d: %s\n",
-              included_filenames.back().c_str(),
-              scan_linenr, message);
+   assert (not lexer::filenames.empty());
+   errllocprintf (lexer::lloc, "%s\n", message);
 }
-
-void lexer_badchar (unsigned char bad) {
-   char char_rep[16];
-   sprintf (char_rep, isgraph (bad) ? "%c" : "\\%03o", bad);
-   errprintf ("%:%s: %d: invalid source character (%s)\n",
-              included_filenames.back().c_str(),
-              scan_linenr, char_rep);
-}
-
-void lexer_badtoken (char* lexeme) {
-   errprintf ("%:%s: %d: invalid token (%s)\n",
-              included_filenames.back().c_str(),
-              scan_linenr, lexeme);
-}
-
-int yylval_token (int symbol) {
-   int offset = scan_offset - yyleng;
-   yylval = new astree (symbol, included_filenames.size() - 1,
-                        scan_linenr, offset, yytext);
-   return symbol;
-}
-
-astree* new_parseroot (void) {
-   yyparse_astree = new astree (TOK_ROOT, 0, 0, 0, "");
-   return yyparse_astree;
-}
-
-void lexer_include (void) {
-   lexer_newline();
-   char filename[strlen (yytext) + 1];
-   int linenr;
-   int scan_rc = sscanf (yytext, "# %d \"%[^\"]\"",
-                         &linenr, filename);
-   if (scan_rc != 2) {
-      errprintf ("%: %d: [%s]: invalid directive, ignored\n",
-                 scan_rc, yytext);
-   }else {
-      printf (";# %d \"%s\"\n", linenr, filename);
-      lexer_newfilename (filename);
-      scan_linenr = linenr - 1;
-      DEBUGF ('m', "filename=%s, scan_linenr=%d\n",
-              included_filenames.back().c_str(), scan_linenr);
-   }
-}
-

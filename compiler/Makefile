@@ -12,7 +12,7 @@ BISON     = bison --defines=${PARSEHDR} --output=${PARSECPP}
 MODULES   = astree auxlib cppstrtok lyutils stringset
 HDRSRC    = ${MODULES:=.h}
 CPPSRC    = ${MODULES:=.cpp} main.cpp
-FLEXSRC   = lexer.l
+FLEXSRC   = scanner.l
 BISONSRC  = parser.y
 LEXHDR    = yylex.h
 PARSEHDR  = yyparse.h
@@ -20,7 +20,7 @@ LEXCPP    = yylex.cpp
 PARSECPP  = yyparse.cpp
 CGENS     = ${LEXCPP} ${PARSECPP}
 ALLGENS   = ${LEXHDR} ${PARSEHDR} ${CGENS}
-EXECBIN   = zexprsm
+EXECBIN   = oc
 ALLCSRC   = ${CPPSRC} ${CGENS}
 OBJECTS   = ${ALLCSRC:.cpp=.o}
 LEXOUT    = yylex.output
@@ -37,6 +37,10 @@ all : ${EXECBIN}
 
 ${EXECBIN} : ${OBJECTS}
 	${CPP} -o${EXECBIN} ${OBJECTS}
+   
+check : all
+	perl /afs/cats.ucsc.edu/courses/cmps012b-wm/bin/checksource \
+			${FLEXSRC} ${BISONSRC} ${MODSRC} Makefile README
 
 yylex.o : yylex.cpp
 	# Suppress warning message from flex compilation.
@@ -64,7 +68,7 @@ lis : ${LISTSRC} tests
 		${patsubst %, ${test}.%, in out err log}}
 
 clean :
-	- rm ${OBJECTS} ${ALLGENS} ${REPORTS} ${DEPSFILE} core
+	- rm ${OBJECTS} ${ALLGENS} ${REPORTS} ${DEPSFILE}
 	- rm ${foreach test, ${TESTINS:.in=}, \
 		${patsubst %, ${test}.%, out err log}}
 

@@ -23,11 +23,10 @@ void chomp (char* string, char delim) {
 }
 
 // Run cpp against the lines of the file.
-stringSet cpplines (FILE* pipe, char* filename) {
+void cpplines (FILE* pipe, char* filename) {
    int linenr = 1;
    char inputname[LINESIZE];
    strcpy (inputname, filename);
-   stringSet strSet;
    
    for (;;) {
       char buffer[LINESIZE];
@@ -51,10 +50,20 @@ stringSet cpplines (FILE* pipe, char* filename) {
          if (token == NULL) break;
          DEBUGF('P', "token %d.%d: [%s]\n",
                  linenr, tokenct, token);
-         strSet.insert(token);
+         stringset::intern(token);
       }
       ++linenr;
    }
    
-   return strSet;
+   
+   //Print .str
+   FILE* file;
+   string outputName(filename);
+   outputName = outputName.substr(0, outputName.find("."));
+   DEBUGF('o', "Generating .str...");
+   string strName = outputName + ".str";
+   file = fopen(strName.c_str(), "w");
+   stringset::dump(file);
+   fclose(file);
+   
 }

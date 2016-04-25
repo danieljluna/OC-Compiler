@@ -6,8 +6,6 @@
 #include <string.h>
 #include <string>
 #include <unistd.h>
-#include <iostream>
-#include <fstream>
 
 #include "auxlib.h"
 #include "lyutils.h"
@@ -22,6 +20,8 @@ string parse_args(int argc, char** argv) {
    int c;
    opterr = 0;
    string cppArgs = "";
+   yy_flex_debug = 0;
+   yydebug = 0;
    
    while ((c = getopt(argc, argv, "@:lyD:")) != -1) {
       switch(c) {
@@ -29,10 +29,10 @@ string parse_args(int argc, char** argv) {
             set_debugflags(optarg);
             break;
          case 'l':
-            yydebug = 1;
+            yy_flex_debug = 1;
             break;
          case 'y':
-            yy_flex_debug = 1;
+            yydebug = 1;
             break;
          case 'D':
             cppArgs += " -D" + string(optarg);
@@ -70,32 +70,34 @@ int main(int argc, char** argv) {
    set_execname(argv[0]);
    string cpp_opts = parse_args(argc, argv);
    
-   stringSet tokens;
    
+   //If we were given a file
    if (optind == argc - 1) {
       char* filename = argv[optind];
+      
       string command = CPP + " " + filename + cpp_opts;
       DEBUGF('P', "command=\"%s\"\n", command.c_str());
-      FILE* pipe = popen(command.c_str(), "r");
-      if (pipe == NULL) {
+      FILE* cppFile = popen(command.c_str(), "r");
+      
+      //If we could pipe into cpp:
+      if (cppFile == NULL) {
          syserrprintf(command.c_str());
+         exit(get_exitstatus());
       } else {
-         tokens = cpplines(pipe, filename);
-         int pclose_rc = pclose(pipe);
-         eprint_status(command.c_str(), pclose_rc);
-         if (pclose_rc != 0) set_exitstatus(EXIT_FAILURE);
-      }
-      
-      if (get_exitstatus() == 0) {
-         ofstream file;
-         string outputName(filename);
-         outputName = outputName.substr(0, outputName.find("."));
+         //Generate .str file
+         cpplines(cppFile, filename);
+         pclose(cppFile);
          
-         file.open(outputName + ".str");
-         file << tokens;
-         file.close();
+         //Generate .tok file
+         yyin = popen(command.c_str(), "r");
+         lexer::newfilename(command);
+         int lclose_rc = lexer::scan(filename);
+         eprint_status(command.c_str(), lclose_rc);
+         if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
       }
       
+      
+   //Not provided a file
    } else {
       errprintf("Error: No file provided.\n");
    }
