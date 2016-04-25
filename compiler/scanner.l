@@ -28,7 +28,7 @@ IDENT           ({LETTER}({LETTER}|{DIGIT})*)
 BADIDENT        ({DIGIT}({LETTER}|{DIGIT})*)
 INT_CONST       ({DIGIT}+)
 CHAR_CONST      ('([^\\"\n]|\\[\\'"0nt])')
-STRING_CONST    (\"([^\\"\n]|\\[\\’"0nt])*\")
+STRING_CONST    (\"([^\\"\n]|\\[\\'"0nt])*\")
 
 
 %%
