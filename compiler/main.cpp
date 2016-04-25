@@ -20,6 +20,8 @@ string parse_args(int argc, char** argv) {
    int c;
    opterr = 0;
    string cppArgs = "";
+   yy_flex_debug = 0;
+   yydebug = 0;
    
    while ((c = getopt(argc, argv, "@:lyD:")) != -1) {
       switch(c) {
@@ -27,10 +29,10 @@ string parse_args(int argc, char** argv) {
             set_debugflags(optarg);
             break;
          case 'l':
-            yydebug = 1;
+            yy_flex_debug = 1;
             break;
          case 'y':
-            yy_flex_debug = 1;
+            yydebug = 1;
             break;
          case 'D':
             cppArgs += " -D" + string(optarg);

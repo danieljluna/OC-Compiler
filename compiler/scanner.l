@@ -23,11 +23,12 @@
 
 LETTER          [A-Za-z_]
 DIGIT           [0-9]
-TOK_IDENT       ({LETTER}({LETTER}|{DIGIT})*)
-TOK_INTCON      ({DIGIT}+)
-TOK_CHARCON     ('([^\\"\n]|\\[\\'"0nt])')
-TOK_STRINGCON   (\"([^\\"\n]|\\[\\’"0nt])*\")
-TOK_ARRAY       \[\]
+ARRAY           \[\]
+IDENT           ({LETTER}({LETTER}|{DIGIT})*)
+BADIDENT        ({DIGIT}({LETTER}|{DIGIT})*)
+INT_CONST       ({DIGIT}+)
+CHAR_CONST      ('([^\\"\n]|\\[\\'"0nt])')
+STRING_CONST    (\"([^\\"\n]|\\[\\’"0nt])*\")
 
 
 %%
@@ -36,13 +37,11 @@ TOK_ARRAY       \[\]
 [ \t]+          { /* Skip whitespace. */ }
 \n              { lexer::newline(); }
 
-{TOK_INTCON}    { RETURN (TOK_INTCON); }
-{TOK_IDENT}     { RETURN (TOK_IDENT); }
-
 "("             { RETURN ('('); }
 ")"             { RETURN (')'); }
 "["             { RETURN ('['); }
 "]"             { RETURN (']'); }
+{ARRAY}         { RETURN (ARRAY}; }
 "{"             { RETURN ('{'); }
 "}"             { RETURN ('}'); }
 ";"             { RETURN (';'); }
@@ -55,6 +54,29 @@ TOK_ARRAY       \[\]
 "/"             { RETURN ('/'); }
 "%"             { RETURN ('%'); }
 "!"             { RETURN ('!'); }
+
+"void"          { RETURN (TOK_VOID); }
+"bool"          { RETURN (TOK_BOOL); }
+"char"          { RETURN (TOK_CHAR); }
+"int"           { RETURN (TOK_INT); }
+"string"        { RETURN (TOK_STRING); }
+"if"            { RETURN (TOK_IF); }
+"else"          { RETURN (TOK_ELSE); }
+"while"         { RETURN (TOK_WHILE); }
+"return"        { RETURN (TOK_RETURN); }
+"struct"        { RETURN (TOK_STRUCT); }
+"false"         { RETURN (TOK_FALSE); }
+"true"          { RETURN (TOK_TRUE); }
+"null"          { RETURN (TOK_NULL); }
+"new"           { RETURN (TOK_NEW); }
+"ord"           { RETURN (TOK_ORD); }
+"chr"           { RETURN (TOK_CHR); }
+
+{IDENT}         { RETURN (TOK_IDENT); }
+{INT_CONST}     { RETURN (TOK_INTCON); }
+{CHAR_CONST}    { RETURN (TOK_CHARCON); }
+{STRING_CONST}  { RETURN (TOK_STRINGCON); }
+
 
 .               { lexer::badchar (*yytext); }
 

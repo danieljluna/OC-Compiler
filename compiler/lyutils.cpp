@@ -89,7 +89,6 @@ int lexer::scan (const char* file) {
          //Dump all symbols
          astree::dump(outFile, yylval);
          fprintf(outFile, "\n");
-         delete yylval;
       }
    }
    
