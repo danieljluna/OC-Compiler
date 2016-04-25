@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
+#include <iomanip>
 
 #include "auxlib.h"
 #include "lyutils.h"
@@ -78,7 +80,7 @@ int lexer::scan (const char* file) {
    string outputName(file);
    outputName = outputName.substr(0, outputName.find("."));
    string tokName = outputName + ".tok";
-   FILE* outFile = fopen(tokName.c_str(), "w");
+   ofstream out(tokName);
    int symbol = 0;
    
    //Start Scan Loop
@@ -86,11 +88,17 @@ int lexer::scan (const char* file) {
       if (symbol == 0) {
          break;
       } else {
-         //Dump all symbols
-         astree::dump(outFile, yylval);
-         fprintf(outFile, "\n");
+         //Dump symbol
+         out << setw(4) << right << yylval->lloc.filenr
+             << setw(4) << yylval->lloc.linenr << "."
+             << setw(3) << setfill('0') << yylval->lloc.offset
+             << setw(5) << setfill(' ') << symbol << "  "
+             << setw(16) << left << parser::get_tname(symbol) << "("
+             << setw(0) << *(yylval->lexinfo) << ")" << endl;
+             
       }
    }
+
    
    return pclose(yyin);
 }
