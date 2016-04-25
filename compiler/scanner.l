@@ -41,7 +41,7 @@ STRING_CONST    (\"([^\\"\n]|\\[\\’"0nt])*\")
 ")"             { RETURN (')'); }
 "["             { RETURN ('['); }
 "]"             { RETURN (']'); }
-{ARRAY}         { RETURN (ARRAY}; }
+{ARRAY}         { RETURN (TOK_ARRAY); }
 "{"             { RETURN ('{'); }
 "}"             { RETURN ('}'); }
 ";"             { RETURN (';'); }
