@@ -1,2 +1,7 @@
 a = b + c;
 void array[] = {a, b, c};
+"The echo of reality\t" + 'a'
+//The below should fail.
+"The echo
+'abc'
+"The echo of reality\9" + '\f'
