@@ -97,6 +97,7 @@ int lexer::scan (const char* file) {
    //Start Scan Loop
    while ((symbol = yylex())) {
       if (symbol == 0) {
+         delete yylval;
          break;
       } else {
          //Dump symbol
@@ -107,7 +108,7 @@ int lexer::scan (const char* file) {
              << setw(16) << left << parser::get_tname(symbol) << "("
              << setw(0) << *(yylval->lexinfo) << ")" << right
              << endl;
-             
+         delete yylval;
       }
    }
    
