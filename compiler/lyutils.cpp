@@ -5,12 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
+#include <iomanip>
 
 #include "auxlib.h"
 #include "lyutils.h"
 #include "yylex.h"
 
 bool lexer::interactive = true;
+bool lexer::scanning = false;
+ofstream lexer::log;
 location lexer::lloc = {0, 1, 0};
 size_t lexer::last_yyleng = 0;
 vector<string> lexer::filenames;
@@ -69,6 +73,13 @@ void lexer::include() {
       }
       lexer::lloc.linenr = linenr - 1;
       lexer::newfilename (filename);
+      
+      //Output to log stream if we are scanning
+      if (scanning) {
+         log << "#" << setw(3) << lexer::lloc.filenr
+             << " \"" << setw(0) << lexer::filenames.back() << "\"" 
+             << endl;
+      }
    }
 }
 
@@ -78,20 +89,33 @@ int lexer::scan (const char* file) {
    string outputName(file);
    outputName = outputName.substr(0, outputName.find("."));
    string tokName = outputName + ".tok";
-   FILE* outFile = fopen(tokName.c_str(), "w");
+   log.open(tokName);
    int symbol = 0;
+   //Mark that we are scanning so we get include output
+   scanning = true;
    
    //Start Scan Loop
    while ((symbol = yylex())) {
       if (symbol == 0) {
+         delete yylval;
          break;
       } else {
-         //Dump all symbols
-         astree::dump(outFile, yylval);
-         fprintf(outFile, "\n");
+         //Dump symbol
+         log << setw(4) << yylval->lloc.filenr
+             << setw(4) << yylval->lloc.linenr << "."
+             << setw(3) << setfill('0') << yylval->lloc.offset
+             << setw(5) << setfill(' ') << symbol << "  "
+             << setw(16) << left << parser::get_tname(symbol) << "("
+             << setw(0) << *(yylval->lexinfo) << ")" << right
+             << endl;
+         delete yylval;
       }
    }
    
+   //Reset scanning flag
+   scanning = false;
+   log.close();
+
    return pclose(yyin);
 }
 

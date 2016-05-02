@@ -35,7 +35,10 @@ struct lexer {
    static void badtoken (char* lexeme);
    static void include();
    
+   //Functions to generate .tok file
    static int scan(const char* filename);
+   static bool scanning;
+   static ofstream log;
 };
 
 struct parser {
