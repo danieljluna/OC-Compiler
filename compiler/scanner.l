@@ -25,10 +25,12 @@ LETTER          [A-Za-z_]
 DIGIT           [0-9]
 ARRAY           \[\]
 IDENT           ({LETTER}({LETTER}|{DIGIT})*)
-BADIDENT        ({DIGIT}({LETTER}|{DIGIT})*)
+BAD_IDENT       ({DIGIT}({LETTER}|{DIGIT})*)
 INT_CONST       ({DIGIT}+)
-CHAR_CONST      ('([^\\"\n]|\\[\\'"0nt])')
-STRING_CONST    (\"([^\\"\n]|\\[\\’"0nt])*\")
+CHAR_CONST      ('([^\\'\n]|\\[\\'"0nt])')
+STRING_CONST    (\"([^\\"\n]|\\[\\'"0nt])*\")
+BAD_CHAR        ('([^'\n]*)['\n])
+BAD_STRING      (\"([^\"\n]*)[\n\"])
 
 
 %%
@@ -72,10 +74,12 @@ STRING_CONST    (\"([^\\"\n]|\\[\\’"0nt])*\")
 "ord"           { RETURN (TOK_ORD); }
 "chr"           { RETURN (TOK_CHR); }
 
-{IDENT}         { RETURN (TOK_IDENT); }
 {INT_CONST}     { RETURN (TOK_INTCON); }
 {CHAR_CONST}    { RETURN (TOK_CHARCON); }
+{BAD_CHAR}      { lexer::badtoken(yytext); }
 {STRING_CONST}  { RETURN (TOK_STRINGCON); }
+{BAD_STRING}    { lexer::badtoken(yytext); }
+{IDENT}         { RETURN (TOK_IDENT); }
 
 
 .               { lexer::badchar (*yytext); }

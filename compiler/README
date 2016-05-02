@@ -3,6 +3,10 @@ Daniel Luna: djluna
 oc - Final Executable. Runs the C Pre-Processor on the oc programs
    as well as tokenizing the strings in a .str file.
 
+astree.h - Declares the structure for the absract syntax tree class.
+
+astree.cpp - Defines the structure for the absract syntax tree class.
+   
 auxlib.h - Declares generic functionality relating to debugging and
    executable information.
 
@@ -13,12 +17,22 @@ cppstrtok.h - Declares functionality to call CPP.
 
 cppstrtok.cpp - Defines functionality to call CPP.
 
+lyutils.h - Declares an interface for working with the flex / bison
+   generated lexer / parser.
+   
+lyutils.h - Defines an interface for working with the flex / bison
+   generated lexer / parser.
+
 main.cpp - Defines a stack class built from a vector.
 
-stingset.h - Declares stringSet class to manage a hash table of 
+parser.y - Bison file used to define the parser.
+
+scanner.l - Flex file used to define the scanner.
+
+stringset.h - Declares stringSet class to manage a hash table of 
    strings.
    
-stingset.cpp - Defines stringSet class to manage a hash table of 
+stringset.cpp - Defines stringSet class to manage a hash table of 
    strings.
 
 README - Summarizes the files required for ydc.

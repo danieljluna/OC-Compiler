@@ -75,25 +75,34 @@ int main(int argc, char** argv) {
    if (optind == argc - 1) {
       char* filename = argv[optind];
       
-      string command = CPP + " " + filename + cpp_opts;
-      DEBUGF('P', "command=\"%s\"\n", command.c_str());
-      FILE* cppFile = popen(command.c_str(), "r");
+      FILE* testForTarget = fopen(filename, "r");
       
-      //If we could pipe into cpp:
-      if (cppFile == NULL) {
-         syserrprintf(command.c_str());
+      //If the file didn't exist:
+      if (!testForTarget) {
+         errprintf("ERROR: %s not found!\n", filename);
          exit(get_exitstatus());
       } else {
-         //Generate .str file
-         cpplines(cppFile, filename);
-         pclose(cppFile);
+         fclose(testForTarget);
+         string command = CPP + " " + filename + cpp_opts;
+         DEBUGF('P', "command=\"%s\"\n", command.c_str());
+         FILE* cppFile = popen(command.c_str(), "r");
          
-         //Generate .tok file
-         yyin = popen(command.c_str(), "r");
-         lexer::newfilename(command);
-         int lclose_rc = lexer::scan(filename);
-         eprint_status(command.c_str(), lclose_rc);
-         if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
+         //If we couldn't pipe into cpp:
+         if (cppFile == NULL) {
+            syserrprintf(command.c_str());
+            exit(get_exitstatus());
+         } else {
+            //Generate .str file
+            cpplines(cppFile, filename);
+            pclose(cppFile);
+            
+            //Generate .tok file
+            yyin = popen(command.c_str(), "r");
+            lexer::newfilename(command);
+            int lclose_rc = lexer::scan(filename);
+            eprint_status(command.c_str(), lclose_rc);
+            if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
+         }
       }
       
       
