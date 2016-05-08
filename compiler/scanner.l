@@ -8,6 +8,7 @@
 
 #define RETURN(SYMBOL) { \
    yylval = new astree (SYMBOL, lexer::lloc, yytext); \
+   lexer::output(SYMBOL); \
    return SYMBOL; \
 }
 

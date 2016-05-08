@@ -98,8 +98,10 @@ int main(int argc, char** argv) {
             
             //Generate .tok file
             yyin = popen(command.c_str(), "r");
-            lexer::newfilename(command);
-            int lclose_rc = lexer::scan(filename);
+            lexer::initializeLog(filename);
+            yyparse();
+            lexer::terminateLog();
+            int lclose_rc = pclose(yyin);
             eprint_status(command.c_str(), lclose_rc);
             if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
          }

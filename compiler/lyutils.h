@@ -36,7 +36,9 @@ struct lexer {
    static void include();
    
    //Functions to generate .tok file
-   static int scan(const char* filename);
+   static bool initializeLog(const char* filename);
+   static void terminateLog();
+   static void output(int symbol);
    static bool scanning;
    static ofstream log;
 };

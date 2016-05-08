@@ -7,6 +7,7 @@
 #include <string.h>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 #include "auxlib.h"
 #include "lyutils.h"
@@ -26,8 +27,13 @@ const string* lexer::filename (int filenr) {
 }
 
 void lexer::newfilename (const string& filename) {
-   lexer::lloc.filenr = lexer::filenames.size();
-   lexer::filenames.push_back (filename);
+   auto it = find(filenames.begin(), filenames.end(), filename);
+   if (it == filenames.end()) {
+      lexer::lloc.filenr = lexer::filenames.size();
+      lexer::filenames.push_back (filename);
+   } else {
+      lexer::lloc.filenr = it - filenames.begin();
+   }
 }
 
 void lexer::advance() {
@@ -76,48 +82,49 @@ void lexer::include() {
       
       //Output to log stream if we are scanning
       if (scanning) {
-         log << "#" << setw(3) << lexer::lloc.filenr
-             << " \"" << setw(0) << lexer::filenames.back() << "\"" 
+         log << "#" << setw(3) << lloc.filenr
+             << " \"" << setw(0) << filenames.at(lloc.filenr) << "\"" 
              << endl;
       }
    }
 }
 
 
-int lexer::scan (const char* file) {
+bool lexer::initializeLog(const char* file) {
    //Generate .tok file
    string outputName(file);
    outputName = outputName.substr(0, outputName.find("."));
    string tokName = outputName + ".tok";
    log.open(tokName);
-   int symbol = 0;
    //Mark that we are scanning so we get include output
-   scanning = true;
+   scanning = log;
    
-   //Start Scan Loop
-   while ((symbol = yylex())) {
-      if (symbol == 0) {
-         delete yylval;
-         break;
-      } else {
-         //Dump symbol
-         log << setw(4) << yylval->lloc.filenr
-             << setw(4) << yylval->lloc.linenr << "."
-             << setw(3) << setfill('0') << yylval->lloc.offset
-             << setw(5) << setfill(' ') << symbol << "  "
-             << setw(16) << left << parser::get_tname(symbol) << "("
-             << setw(0) << *(yylval->lexinfo) << ")" << right
-             << endl;
-         delete yylval;
-      }
-   }
-   
-   //Reset scanning flag
-   scanning = false;
-   log.close();
-
-   return pclose(yyin);
+   return scanning;
 }
+   
+   
+void lexer::terminateLog() {
+   //Reset scanning flag
+   if (scanning) {
+      scanning = false;
+      log.close();
+   }
+}
+
+
+void lexer::output(int symbol) {
+   if ((scanning) && (symbol != 0)) {
+      //Dump symbol
+      log << setw(4) << yylval->lloc.filenr
+          << setw(4) << yylval->lloc.linenr << "."
+          << setw(3) << setfill('0') << yylval->lloc.offset
+          << setw(5) << setfill(' ') << symbol << "  "
+          << setw(16) << left << parser::get_tname(symbol) << "("
+          << setw(0) << *(yylval->lexinfo) << ")" << right
+          << endl;
+   }
+}
+
 
 void yyerror (const char* message) {
    assert (not lexer::filenames.empty());
