@@ -25,16 +25,19 @@ struct astree {
    vector<astree*> children; // children of this n-way node
 
    // Functions.
-   astree (int symbol, const location&, const char* lexinfo);
+   astree(int symbol, const location&, const char* lexinfo);
    ~astree();
-   astree* adopt (astree* child1, astree* child2 = nullptr);
-   astree* adopt_sym (astree* child, int symbol);
-   astree* sym_adopt (astree* child, int childSymbol);
+   //adopt is formated so any symbols present alter the preceding ast
+   astree* adopt(astree* child1, astree* child2 = nullptr);
+   astree* adopt(int rootSym, astree* child1, astree* child2=nullptr);
+   astree* adopt(astree* child1, int sym1, astree* child2 = nullptr);
+   astree* adopt(astree* child1, astree* child2, int sym2);
+   astree* adopt(astree* child1, int sym1, astree* child2, int sym2);
    astree* sym(int symbol);
-   void dump_node (FILE*);
-   void dump_tree (FILE*, int depth = 0);
-   static void dump (FILE* outfile, astree* tree);
-   static void print (FILE* outfile, astree* tree, int depth = 0);
+   void dump_node(FILE*);
+   void dump_tree(FILE*, int depth = 0);
+   static void dump(FILE* outfile, astree* tree);
+   static void print(FILE* outfile, astree* tree, int depth = 0);
 };
 
 void free (astree* tree1, astree* tree2 = nullptr);

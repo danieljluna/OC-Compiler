@@ -37,14 +37,25 @@ astree* astree::adopt (astree* child1, astree* child2) {
    return this;
 }
 
-astree* astree::adopt_sym (astree* child, int symbol_) {
-   symbol = symbol_;
-   return adopt (child);
+astree* astree::adopt(int rootSym, astree* child1, astree* child2){
+   symbol = rootSym;
+   return adopt (child1, child2);
 }
 
-astree* astree::sym_adopt (astree* child, int childSymbol) {
-   child->symbol = childSymbol;
-   return adopt(child);
+astree* astree::adopt(astree* child1, int sym1, astree* child2) {
+   child1->symbol = sym1;
+   return adopt(child1, child2);
+}
+
+astree* astree::adopt(astree* child1, astree* child2, int sym2) {
+    child2->symbol = sym2;
+    return adopt(child1, child2);
+}
+
+astree* astree::adopt(astree* child1,int sym1,astree* child2,int sym2){
+    child1->symbol = sym1;
+    child2->symbol = sym2;
+    return adopt(child1, child2);
 }
 
 astree* astree::sym(int symbol_) {
@@ -80,11 +91,22 @@ void astree::dump (FILE* outfile, astree* tree) {
 }
 
 void astree::print (FILE* outfile, astree* tree, int depth) {
+   //Print indentation
    for (int i = 0; i < depth; ++i)
       fprintf (outfile, "|  ");
+   
+   //Trim TOK_ from symbol name
+   const char* name = parser::get_tname (tree->symbol);
+   if (name[0] == 'T') {
+       name = name + 4;
+   }
+   
+   //Print astree
    fprintf (outfile, "%s \"%s\" (%zd.%zd.%zd)\n",
-            parser::get_tname (tree->symbol), tree->lexinfo->c_str(),
+            name, tree->lexinfo->c_str(),
             tree->lloc.filenr, tree->lloc.linenr, tree->lloc.offset);
+            
+   //Print children
    for (astree* child: tree->children) {
       astree::print (outfile, child, depth + 1);
    }
