@@ -54,8 +54,8 @@ BAD_STRING      (\"([^\"\n]*)[\n\"])
 "!="            { RETURN (TOK_NE); }
 "<="            { RETURN (TOK_LE); }
 ">="            { RETURN (TOK_GE); }
-"<"             { RETURN (TOK_LT); }
-">"             { RETURN (TOK_GT); }
+"<"             { RETURN ('<'); }
+">"             { RETURN ('>'); }
 "="             { RETURN ('='); }
 "+"             { RETURN ('+'); }
 "-"             { RETURN ('-'); }

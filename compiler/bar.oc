@@ -3,15 +3,14 @@ struct foo {
    bool [] a;
    void n;
 }
-{}
-;
 { 
-    {{{}}}
-    char a = 'a';
     string b = new string (5 + 1);
     int c = new int [-5];
     blah xkcd = new blah();
-    
-    a.qr[6 / (7 - 5) % 2 - 1];
 }
+    
+a.qr[6 / (7 - 5) % 2];
 
+(5 < 67);
+
+(5 + -1);
