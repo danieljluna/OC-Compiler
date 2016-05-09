@@ -8,10 +8,10 @@ struct foo {
 { 
     {{{}}}
     char a = 'a';
-    string b = new string (5);
-    int c = new int [5];
+    string b = new string (5 + 1);
+    int c = new int [-5];
     blah xkcd = new blah();
     
-    a;
+    a.qr[6 / (7 - 5) % 2 - 1];
 }
 

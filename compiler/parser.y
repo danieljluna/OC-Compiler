@@ -105,20 +105,21 @@ identdec    : basetype ident        { $$=$1->adopt($2,TOK_DECLID); }
             
 //expr-Rules-----------------------------------------------------------
             
-expr        : expr binaryop expr    { $$ = $2->adopt($1, $3); }
-            | expr '=' expr         { $$ = $1->adopt($1); }
-            | expr '+' expr         { $$ = $1->adopt($1); }
-            | expr '-' expr         { $$ = $1->adopt($1); }
-            | '!' expr              { $$ = $1->adopt($1); }
-            | '+' expr   %prec POS  { $$ = $1->adopt(TOK_POS, $1); }
-            | '-' expr   %prec NEG  { $$ = $1->adopt(TOK_NEG, $1); }
-            | allocator             { $$ = $1; }
+expr        //: expr binaryop expr    { $$ = $2->adopt($1, $3); }           s/r*****
+            //: expr '=' expr         { $$ = $2->adopt($1, $3); }           s/r
+            //: expr '+' expr         { $$ = $2->adopt($1, $3); }           s/r
+            //| expr '-' expr         { $$ = $2->adopt($1, $3); }           s/r
+            //: '!' expr              { $$ = $1->adopt($2); }               s/r
+            //| '+' expr   %prec POS  { $$ = $1->adopt(TOK_POS, $2); }      s/r
+            //| '-' expr   %prec NEG  { $$ = $1->adopt(TOK_NEG, $2); }      s/r
+            : allocator             { $$ = $1; }
             | '(' expr ')'  %prec EXPR_PAREN
                                     { free($1, $3); $$ = $2; }
             | variable              { $$ = $1; }
             | constant              { $$ = $1; }
             ;
-            
+        
+        /*
 binaryop    : TOK_EQ                { $$ = $1; }
             | TOK_NE                { $$ = $1; }
             | '<'                   { $$ = $1; }
@@ -128,11 +129,7 @@ binaryop    : TOK_EQ                { $$ = $1; }
             | '*'                   { $$ = $1; }
             | '/'                   { $$ = $1; }
             | '%'                   { $$ = $1; }
-            ;
-            
-unaryop     : '!'                   { $$ = $1; }
-            |
-            ;
+            ;*/
 
 allocator   : new ident '(' ')'     { free($3, $4); $$ = $1->adopt($2, TOK_TYPEID); }
             | new string '(' expr ')'
