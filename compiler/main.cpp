@@ -101,6 +101,7 @@ int main(int argc, char** argv) {
             lexer::initializeLog(filename);
             yyparse();
             lexer::terminateLog();
+            parser::log(filename);
             int lclose_rc = pclose(yyin);
             eprint_status(command.c_str(), lclose_rc);
             if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);

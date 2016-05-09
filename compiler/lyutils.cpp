@@ -14,7 +14,7 @@
 #include "yylex.h"
 
 bool lexer::interactive = true;
-bool lexer::scanning = false;
+bool lexer::logging = false;
 ofstream lexer::log;
 location lexer::lloc = {0, 1, 0};
 size_t lexer::last_yyleng = 0;
@@ -81,7 +81,7 @@ void lexer::include() {
       lexer::newfilename (filename);
       
       //Output to log stream if we are scanning
-      if (scanning) {
+      if (logging) {
          log << "#" << setw(3) << lloc.filenr
              << " \"" << setw(0) << filenames.at(lloc.filenr) << "\"" 
              << endl;
@@ -97,23 +97,23 @@ bool lexer::initializeLog(const char* file) {
    string tokName = outputName + ".tok";
    log.open(tokName);
    //Mark that we are scanning so we get include output
-   scanning = log;
+   logging = log;
    
-   return scanning;
+   return logging;
 }
    
    
 void lexer::terminateLog() {
-   //Reset scanning flag
-   if (scanning) {
-      scanning = false;
+   //Reset logging flag
+   if (logging) {
+      logging = false;
       log.close();
    }
 }
 
 
 void lexer::output(int symbol) {
-   if ((scanning) && (symbol != 0)) {
+   if ((logging) && (symbol != 0)) {
       //Dump symbol
       log << setw(4) << yylval->lloc.filenr
           << setw(4) << yylval->lloc.linenr << "."
@@ -130,3 +130,27 @@ void yyerror (const char* message) {
    assert (not lexer::filenames.empty());
    errllocprintf (lexer::lloc, "%s\n", message);
 }
+
+
+
+
+//PARSER-FUNCTIONALITY-------------------------------------------------
+
+bool parser::log(const char* filename) {
+    //Generate .ast file
+   string outputName(filename);
+   outputName = outputName.substr(0, outputName.find("."));
+   string tokName = outputName + ".ast";
+   FILE* log;
+   log = fopen(tokName.c_str(), "w");
+   bool result = false;
+   
+   if (log) {
+      root->dump_tree(log);
+      fclose(log);
+      result = true;
+   }
+   
+   return result;
+}
+

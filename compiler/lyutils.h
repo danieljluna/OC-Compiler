@@ -39,13 +39,16 @@ struct lexer {
    static bool initializeLog(const char* filename);
    static void terminateLog();
    static void output(int symbol);
-   static bool scanning;
+   static bool logging;
    static ofstream log;
 };
 
 struct parser {
    static astree* root;
    static const char* get_tname (int symbol);
+   
+   //Functions to generate .ast file
+   static bool log(const char* filename);
 };
 
 #define YYSTYPE astree*
