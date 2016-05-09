@@ -53,7 +53,7 @@ start       : program               { $$ = $1 = nullptr; }
          
 program     : program structdef     { $$ = $1->adopt($2); }
             //| program function      { $$ = $1->adopt($2); }
-            | program statement     { $$ = $1->adopt($2); }
+            | program stmt          { $$ = $1->adopt($2); }
             | program error '}'     { $$ = $1; free($3);}
             | program error ';'     { $$ = $1; free($3); }
             |                       { $$ = parser::root; }
@@ -87,9 +87,9 @@ fielddec    : basetype ident        { $$=$1->adopt($2,TOK_FIELD); }
             
 //statement-Rules------------------------------------------------------
 
-statement   : block                 { $$ = $1; }
+stmt        : block                 { $$ = $1; }
             | vardec                { $$ = $1; }
-            //| while                 { $$ = $1; }
+            | whilestmt             { $$ = $1; }
             //| ifelse                { $$ = $1; }
             //| return                { $$ = $1; }
             | expr ';'              { free($2); $$ = $1; }
@@ -101,9 +101,13 @@ vardec      : identdec '=' expr ';' { free($4); $$ = $2->adopt(TOK_VARDECL,$1,$3
 identdec    : basetype ident        { $$=$1->adopt($2,TOK_DECLID); }
             | basetype array ident  { $$=$2->adopt($1,$3,TOK_DECLID);}
             ;
+            
+whilestmt   : while '(' expr ')' stmt 
+                                    { free($2, $4); $$ = $1->adopt($3, $5); }
+            ;
 
             
-//expr-Rules-----------------------------------------------------------
+//expression-Rules-----------------------------------------------------
             
 expr        : expr '=' expr         { $$ = $2->adopt($1, $3); }
             | expr '*' expr         { $$ = $2->adopt($1, $3); }
@@ -123,6 +127,7 @@ expr        : expr '=' expr         { $$ = $2->adopt($1, $3); }
             | allocator             { $$ = $1; }
             | '(' expr ')'  %prec EXPR_PAREN
                                     { free($1, $3); $$ = $2; }
+            | call                  { $$ = $1; }
             | variable              { $$ = $1; }
             | constant              { $$ = $1; }
             ;
@@ -132,6 +137,14 @@ allocator   : new ident '(' ')'     { free($3, $4); $$ = $1->adopt($2, TOK_TYPEI
                                     { free($3, $5); $$ = $1->adopt(TOK_NEWSTRING, $2, $4); }
             | new basetype '[' expr ']'
                                     { free($3, $5); $$ = $1->adopt(TOK_NEWARRAY, $2, $4); }
+            ;
+            
+call        : callargs ')'          { free($2); $$ = $1; }
+            | ident '(' ')'         { free($3); $$ = $2->adopt(TOK_CALL, $1);}
+            ;
+            
+callargs    : callargs ',' expr     { free($2); $$ = $1->adopt($3); }
+            | ident '(' expr        { $$ = $2->adopt(TOK_CALL,$1,$3); }
             ;
             
 variable    : ident                 { $$ = $1; }
@@ -155,8 +168,8 @@ block       : '{' '}'               { free($2); $$ = $1; }
             | ';'                   { $$ = $1; }
             ;
             
-blockstmts  : blockstmts statement  { $$ = $1->adopt($2); }
-            | '{' statement         { $$ = $1->adopt($2); }
+blockstmts  : blockstmts stmt       { $$ = $1->adopt($2); }
+            | '{' stmt              { $$ = $1->adopt($2); }
             ;
 
 basetype    : TOK_VOID              { $$ = $1; }
@@ -181,6 +194,20 @@ new         : TOK_NEW               { $$ = $1; }
             
 string      : TOK_STRING            { $$ = $1; }
             ;
+            
+while       : TOK_WHILE             { $$ = $1; }
+            ;
+            
+/*
+return      : TOK_RETURN            { $$ = $1; }
+            ;
+            
+if          : TOK_IF                { $$ = $1; }
+            ;
+            
+else        : TOK_ELSE              { $$ = $1; }
+            ;
+*/
             
             
 %%
