@@ -42,14 +42,20 @@ BAD_STRING      (\"([^\"\n]*)[\n\"])
 
 "("             { RETURN ('('); }
 ")"             { RETURN (')'); }
+{ARRAY}         { RETURN (TOK_ARRAY); }
 "["             { RETURN ('['); }
 "]"             { RETURN (']'); }
-{ARRAY}         { RETURN (TOK_ARRAY); }
 "{"             { RETURN ('{'); }
 "}"             { RETURN ('}'); }
 ";"             { RETURN (';'); }
 ","             { RETURN (','); }
 "."             { RETURN ('.'); }
+"=="            { RETURN (TOK_EQ); }
+"!="            { RETURN (TOK_NE); }
+"<="            { RETURN (TOK_LE); }
+">="            { RETURN (TOK_GE); }
+"<"             { RETURN (TOK_LT); }
+">"             { RETURN (TOK_GT); }
 "="             { RETURN ('='); }
 "+"             { RETURN ('+'); }
 "-"             { RETURN ('-'); }

@@ -1,1 +1,7 @@
-a;
+struct foo {}
+/*
+struct foo {
+   bool a;
+   void n;
+}
+*/

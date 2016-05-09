@@ -146,7 +146,7 @@ bool parser::log(const char* filename) {
    bool result = false;
    
    if (log) {
-      root->dump_tree(log);
+      astree::print(log, root);
       fclose(log);
       result = true;
    }
