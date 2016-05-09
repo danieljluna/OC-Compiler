@@ -31,21 +31,30 @@
 %token TOK_POS TOK_NEG TOK_NEWARRAY TOK_TYPEID TOK_FIELD
 %token TOK_ORD TOK_CHR TOK_ROOT
 
+%right TOK_IF TOK_ELSE
+%right 
+
 %start start
 
 %%
 
-start       : program               { $$ = $1 = nullptr; }
+start       : program                  { $$ = $1 = nullptr; }
             ;
          
-program     //: program structdef     { $$ = $1->adopt($2); }
-            //| program function      { $$ = $1->adopt($2); }
-            //| program statement     { $$ = $1->adopt($2); }
-            : program error '}'     { $$ = $1; }
-            | program error ';'     { $$ = $1; }
-            |                       { $$ = parser::root; }
+program     : program structdef        { $$ = $1->adopt($2); }
+            //| program function         { $$ = $1->adopt($2); }
+            //| program statement        { $$ = $1->adopt($2); }
+            | program error '}'        { $$ = $1; }
+            | program error ';'        { $$ = $1; }
+            |                          { $$ = parser::root; }
             ;
          
+structdecl  : TOK_STRUCT TOK_IDENT     { $$->adopt($1, $2); }
+            ;
+         
+structdef   : structdecl '{' '}'       { $$ = $1->adopt($2); }
+            | structdecl fieldlist '}' { $$ = $}
+            ;
 %%
 
 const char* parser::get_tname (int symbol) {
