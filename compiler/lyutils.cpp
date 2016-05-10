@@ -12,6 +12,7 @@
 #include "auxlib.h"
 #include "lyutils.h"
 #include "yylex.h"
+#include "yyparse.h"
 
 bool lexer::interactive = true;
 bool lexer::logging = false;
@@ -152,3 +153,51 @@ bool parser::log(const char* filename) {
    return result;
 }
 
+
+
+
+//PARSER-HELPER--------------------------------------------------------
+
+astree* parseFn(astree* ident, astree* param, astree* toss) {
+   astree* result = new astree(TOK_FUNCTION, 
+                               ident->lloc, 
+                               ident->lexinfo->c_str());
+   
+   //We have an unitialized param
+   if (param->symbol != TOK_PARAMLIST) {
+      param->symbol = TOK_PARAMLIST;
+   }
+   
+   result->adopt(ident, param);
+   
+   free(toss);
+   
+   return result;
+   
+}
+
+
+astree* parseFn(astree* fn, astree* block) {
+   if ((block->children.size() == 0) && (*block->lexinfo == ";")) {
+      fn->symbol = TOK_PROTOTYPE;
+   } else {
+      fn->adopt(block);
+   }
+   
+   return fn;
+}
+
+astree* parseIf(astree* ifast, astree* expr, astree* stmt,
+                astree* toss1, astree* toss2) {
+   ifast->adopt(expr, stmt);
+   free(toss1, toss2);
+   return ifast;
+}
+
+astree* parseIf(astree* ifast, astree* expr, astree* stmt1,
+                astree* stmt2, astree* toss1, astree* toss2,
+                astree* toss3) {
+   ifast->adopt(expr, stmt1, stmt2);
+   free(toss1, toss2, toss3);
+   return ifast;
+}

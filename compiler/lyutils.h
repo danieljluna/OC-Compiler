@@ -51,6 +51,16 @@ struct parser {
    static bool log(const char* filename);
 };
 
+//Parsing functions
+astree* parseFn(astree* ident, astree* param, astree* toss);
+astree* parseFn(astree* fn, astree* block);
+
+astree* parseIf(astree* ifast, astree* expr, astree* stmt,
+                 astree* toss1, astree* toss2);
+astree* parseIf(astree* ifast, astree* expr, astree* stmt1,
+                 astree* stmt2, astree* toss1, astree* toss2,
+                 astree* toss3);
+
 #define YYSTYPE astree*
 #include "yyparse.h"
 

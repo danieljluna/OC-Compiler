@@ -75,15 +75,22 @@ fielddecs   : fielddecs fielddec ';'
                                     { free($2, $4); $$=$1->adopt($3);}
             ;
             
-fielddec    : basetype ident        { $$=$1->adopt($2,TOK_FIELD); }
+fielddec    : basetype ident        { $$ = $1->adopt($2,TOK_FIELD); }
             | basetype array ident  { $$ = $2->adopt($1,$3,TOK_FIELD);}
             ;
             
             
 //function-Rules-------------------------------------------------------
             
-function    : identdec block        { $$ = $1; }
-            | identdec ';'          {}
+function    : fndec block           { $$ = parseFn($1, $2); }
+            ;
+            
+fndec       : identdec params ')'   { $$ = parseFn($1, $2, $3); }
+            | identdec '(' ')'      { $$ = parseFn($1, $2, $3); }
+            ;
+            
+params      : '(' identdec          { $$=$1->adopt(TOK_PARAMLIST,$2); }
+            | params ',' identdec   { free($2); $$ = $1->adopt($3); }
             ;
             
             
@@ -101,13 +108,13 @@ vardec      : identdec '=' expr ';' { free($4); $$ = $2->adopt(TOK_VARDECL, $1, 
             ;
             
 whilestmt   : while '(' expr ')' stmt 
-                                    { free($2, $4); $$ = $1->adopt($3, $5); }
+                                    { free($2,$4);$$=$1->adopt($3,$5);}
             ;
             
 ifelse      : TOK_IF '(' expr ')' stmt %prec TOK_IF
-                                    { free($2,$4);$$=$1->adopt($3,$5);}
+                                    { $$ = parseIf($1,$3,$5,$2,$4); }
             | TOK_IF '(' expr ')' stmt TOK_ELSE stmt
-                                    { free($2, $4, $6); $1->adopt($3, $5, $7); }
+                                    {$$=parseIf($1,$3,$5,$7,$2,$4,$6);}
             ;
             
 returnstmt  : return expr ';'       { free($3); $$ = $1->adopt($2); }
