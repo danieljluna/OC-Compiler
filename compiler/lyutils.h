@@ -60,6 +60,22 @@ astree* parseIf(astree* ifast, astree* expr, astree* stmt,
 astree* parseIf(astree* ifast, astree* expr, astree* stmt1,
                  astree* stmt2, astree* toss1, astree* toss2,
                  astree* toss3);
+                 
+astree* parseVarDec(astree* ident, astree* equals, astree* expr,
+                    astree* toss);
+                    
+astree* parseRetVoid(astree* returnast, astree* toss);
+
+astree* parseAlloc(astree* newast, astree* type,
+                   astree* toss1, astree* toss2);
+astree* parseAlloc(astree* newast, astree* type, astree* expr,
+                   astree* toss1, astree* toss2);
+                   
+astree* parseCall(astree* ident, astree* paren,
+                  astree* expr = nullptr);
+                  
+astree* parseIndex(astree* expr1, astree* bracket, astree* expr2,
+                   astree* toss);
 
 #define YYSTYPE astree*
 #include "yyparse.h"

@@ -201,3 +201,49 @@ astree* parseIf(astree* ifast, astree* expr, astree* stmt1,
    free(toss1, toss2, toss3);
    return ifast;
 }
+
+astree* parseVarDec(astree* ident, astree* equals, astree* expr,
+                    astree* toss) {
+   equals->adopt(TOK_VARDECL, ident, expr);
+   free(toss);
+   return equals;
+}
+
+astree* parseRetVoid(astree* returnast, astree* toss) {
+   free(toss);
+   returnast->sym(TOK_RETURNVOID);
+   return returnast;
+}
+
+astree* parseAlloc(astree* newast, astree* type,
+                   astree* toss1, astree* toss2) {
+   free(toss1, toss2);
+   newast->adopt(type, TOK_TYPEID);
+   return newast;
+}
+
+astree* parseAlloc(astree* newast, astree* type, astree* expr,
+                   astree* toss1, astree* toss2) {
+   free(toss1, toss2);
+   if (type->symbol == TOK_STRING) {
+      newast->adopt(TOK_NEWSTRING, type, expr);
+   } else {
+      newast->adopt(TOK_NEWARRAY, type, expr);
+   }
+   return newast;
+}
+
+astree* parseCall(astree* ident, astree* paren,
+                  astree* expr) {
+   paren->adopt(TOK_CALL, ident);
+   if (expr != nullptr) paren->adopt(expr);
+   return paren;
+}
+
+astree* parseIndex(astree* expr1, astree* bracket, astree* expr2,
+                   astree* toss) {
+   free(toss);
+   bracket->adopt(TOK_INDEX, expr1, expr2);
+   return bracket;
+}
+

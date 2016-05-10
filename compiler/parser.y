@@ -104,7 +104,7 @@ stmt        : block                 { $$ = $1; }
             | expr ';'              { free($2); $$ = $1; }
             ;
 
-vardec      : identdec '=' expr ';' { free($4); $$ = $2->adopt(TOK_VARDECL, $1, $3); }
+vardec      : identdec '=' expr ';' { $$ = parseVarDec($1,$2,$3,$4); }
             ;
             
 whilestmt   : while '(' expr ')' stmt 
@@ -118,7 +118,7 @@ ifelse      : TOK_IF '(' expr ')' stmt %prec TOK_IF
             ;
             
 returnstmt  : return expr ';'       { free($3); $$ = $1->adopt($2); }
-            | return ';'            { free($2); $$ = $1->sym(TOK_RETURNVOID); }
+            | return ';'            { $$ = parseRetVoid($1, $2); }
             ;
 
             
@@ -147,23 +147,23 @@ expr        : expr '=' expr         { $$ = $2->adopt($1, $3); }
             | constant              { $$ = $1; }
             ;
 
-allocator   : new ident '(' ')'     { free($3, $4); $$ = $1->adopt($2, TOK_TYPEID); }
+allocator   : new ident '(' ')'     { $$ = parseAlloc($1,$2,$3,$4); }
             | new string '(' expr ')'
-                                    { free($3, $5); $$ = $1->adopt(TOK_NEWSTRING, $2, $4); }
+                                    { $$ = parseAlloc($1,$2,$4,$3,$5);}
             | new basetype '[' expr ']'
-                                    { free($3, $5); $$ = $1->adopt(TOK_NEWARRAY, $2, $4); }
+                                    { $$ = parseAlloc($1,$2,$4,$3,$5);}
             ;
             
 call        : callargs ')'          { free($2); $$ = $1; }
-            | ident '(' ')'         { free($3); $$ = $2->adopt(TOK_CALL, $1);}
+            | ident '(' ')'         { free($3); $$ = parseCall($1,$2);}
             ;
             
 callargs    : callargs ',' expr     { free($2); $$ = $1->adopt($3); }
-            | ident '(' expr        { $$ = $2->adopt(TOK_CALL,$1,$3); }
+            | ident '(' expr        { $$ = parseCall($1, $2, $3); }
             ;
             
 variable    : ident                 { $$ = $1; }
-            | expr '[' expr ']'     { free($4); $$ = $2->adopt(TOK_INDEX,$1,$3);}
+            | expr '[' expr ']'     { $$ = parseIndex($1,$2,$3,$4); }
             | expr '.' ident        { $$ = $2->adopt($1,$3,TOK_FIELD);}
             ;
             
