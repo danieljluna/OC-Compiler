@@ -1,5 +1,5 @@
 %{
-// Dummy parser for scanner project.
+// djluna: Daniel Luna
 
 #include <cassert>
 
