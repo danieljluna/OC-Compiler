@@ -93,7 +93,6 @@ void lexer::include() {
 bool lexer::initializeLog(const char* file) {
    //Generate .tok file
    string outputName(file);
-   outputName = outputName.substr(0, outputName.find("."));
    string tokName = outputName + ".tok";
    log.open(tokName);
    //Mark that we are scanning so we get include output
@@ -139,7 +138,6 @@ void yyerror (const char* message) {
 bool parser::log(const char* filename) {
     //Generate .ast file
    string outputName(filename);
-   outputName = outputName.substr(0, outputName.find("."));
    string tokName = outputName + ".ast";
    FILE* log;
    log = fopen(tokName.c_str(), "w");

@@ -75,6 +75,9 @@ int main(int argc, char** argv) {
    if (optind == argc - 1) {
       char* filename = argv[optind];
       
+      //Remove file bounds
+      
+      
       FILE* testForTarget = fopen(filename, "r");
       
       //If the file didn't exist:
@@ -92,16 +95,20 @@ int main(int argc, char** argv) {
             syserrprintf(command.c_str());
             exit(get_exitstatus());
          } else {
+            //Update filename
+            string fname(filename);
+            fname = fname.substr(0, fname.find_last_of("."));
+            
             //Generate .str file
             cpplines(cppFile, filename);
             pclose(cppFile);
             
             //Generate .tok file
             yyin = popen(command.c_str(), "r");
-            lexer::initializeLog(filename);
+            lexer::initializeLog(fname.c_str());
             yyparse();
             lexer::terminateLog();
-            parser::log(filename);
+            parser::log(fname.c_str());
             int lclose_rc = pclose(yyin);
             eprint_status(command.c_str(), lclose_rc);
             if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);

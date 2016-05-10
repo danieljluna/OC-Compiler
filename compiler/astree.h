@@ -28,7 +28,9 @@ struct astree {
    astree(int symbol, const location&, const char* lexinfo);
    ~astree();
    //adopt is formated so any symbols present alter the preceding ast
-   astree* adopt(astree* child1, astree* child2 = nullptr);
+   astree* adopt(astree* child1, 
+                 astree* child2 = nullptr, 
+                 astree* child3 = nullptr);
    astree* adopt(int rootSym, astree* child1, astree* child2=nullptr);
    astree* adopt(astree* child1, int sym1, astree* child2 = nullptr);
    astree* adopt(astree* child1, astree* child2, int sym2);
@@ -40,7 +42,9 @@ struct astree {
    static void print(FILE* outfile, astree* tree, int depth = 0);
 };
 
-void free (astree* tree1, astree* tree2 = nullptr);
+void free (astree* tree1, 
+           astree* tree2 = nullptr,
+           astree* tree3 = nullptr);
 
 void errllocprintf (const location&, const char* format, const char*);
 

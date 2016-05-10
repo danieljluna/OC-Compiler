@@ -52,7 +52,7 @@ start       : program               { $$ = $1 = nullptr; }
             ;
          
 program     : program structdef     { $$ = $1->adopt($2); }
-            //| program function      { $$ = $1->adopt($2); }
+            | program function      { $$ = $1->adopt($2); }
             | program stmt          { $$ = $1->adopt($2); }
             | program error '}'     { $$ = $1; free($3);}
             | program error ';'     { $$ = $1; free($3); }
@@ -82,7 +82,9 @@ fielddec    : basetype ident        { $$=$1->adopt($2,TOK_FIELD); }
             
 //function-Rules-------------------------------------------------------
             
-            
+function    : identdec block        { $$ = $1; }
+            | identdec ';'          {}
+            ;
             
             
 //statement-Rules------------------------------------------------------
@@ -90,20 +92,26 @@ fielddec    : basetype ident        { $$=$1->adopt($2,TOK_FIELD); }
 stmt        : block                 { $$ = $1; }
             | vardec                { $$ = $1; }
             | whilestmt             { $$ = $1; }
-            //| ifelse                { $$ = $1; }
-            //| return                { $$ = $1; }
+            | ifelse                { $$ = $1; }
+            | returnstmt            { $$ = $1; }
             | expr ';'              { free($2); $$ = $1; }
             ;
 
-vardec      : identdec '=' expr ';' { free($4); $$ = $2->adopt(TOK_VARDECL,$1,$3);}
-            ;
-            
-identdec    : basetype ident        { $$=$1->adopt($2,TOK_DECLID); }
-            | basetype array ident  { $$=$2->adopt($1,$3,TOK_DECLID);}
+vardec      : identdec '=' expr ';' { free($4); $$ = $2->adopt(TOK_VARDECL, $1, $3); }
             ;
             
 whilestmt   : while '(' expr ')' stmt 
                                     { free($2, $4); $$ = $1->adopt($3, $5); }
+            ;
+            
+ifelse      : TOK_IF '(' expr ')' stmt %prec TOK_IF
+                                    { free($2,$4);$$=$1->adopt($3,$5);}
+            | TOK_IF '(' expr ')' stmt TOK_ELSE stmt
+                                    { free($2, $4, $6); $1->adopt($3, $5, $7); }
+            ;
+            
+returnstmt  : return expr ';'       { free($3); $$ = $1->adopt($2); }
+            | return ';'            { free($2); $$ = $1->sym(TOK_RETURNVOID); }
             ;
 
             
@@ -172,6 +180,10 @@ blockstmts  : blockstmts stmt       { $$ = $1->adopt($2); }
             | '{' stmt              { $$ = $1->adopt($2); }
             ;
 
+identdec    : basetype ident        { $$=$1->adopt($2,TOK_DECLID); }
+            | basetype array ident  { $$=$2->adopt($1,$3,TOK_DECLID);}
+            ;
+            
 basetype    : TOK_VOID              { $$ = $1; }
             | TOK_BOOL              { $$ = $1; }
             | TOK_CHAR              { $$ = $1; }
@@ -198,18 +210,10 @@ string      : TOK_STRING            { $$ = $1; }
 while       : TOK_WHILE             { $$ = $1; }
             ;
             
-/*
 return      : TOK_RETURN            { $$ = $1; }
             ;
-            
-if          : TOK_IF                { $$ = $1; }
-            ;
-            
-else        : TOK_ELSE              { $$ = $1; }
-            ;
-*/
-            
-            
+
+
 %%
 
 const char* parser::get_tname (int symbol) {
