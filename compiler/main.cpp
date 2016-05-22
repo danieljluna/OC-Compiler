@@ -122,6 +122,8 @@ int main(int argc, char** argv) {
    }
    
    DEBUGF('x', "Exit Status: %i\n", get_exitstatus());
+   free(parser::root);
+   
    return get_exitstatus();
 }
 
