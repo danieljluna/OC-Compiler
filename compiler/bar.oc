@@ -1,7 +1,16 @@
-a = b + c;
-void array[] = {a, b, c};
-"The echo of reality\t" + 'a'
-//The below should fail.
-"The echo
-'abc'
-"The echo of reality\9" + '\f'
+
+struct foo {
+   bool [] a;
+   void n;
+}
+{ 
+    string b = new string (5 + 1);
+    int c = new int [-5];
+    blah xkcd = new blah();
+}
+    
+a.qr[6 / (7 - 5) % 2];
+
+(5 < 67);
+
+(5 + -1);

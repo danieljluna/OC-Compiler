@@ -7,13 +7,15 @@
 #include <string.h>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 #include "auxlib.h"
 #include "lyutils.h"
 #include "yylex.h"
+#include "yyparse.h"
 
 bool lexer::interactive = true;
-bool lexer::scanning = false;
+bool lexer::logging = false;
 ofstream lexer::log;
 location lexer::lloc = {0, 1, 0};
 size_t lexer::last_yyleng = 0;
@@ -26,8 +28,13 @@ const string* lexer::filename (int filenr) {
 }
 
 void lexer::newfilename (const string& filename) {
-   lexer::lloc.filenr = lexer::filenames.size();
-   lexer::filenames.push_back (filename);
+   auto it = find(filenames.begin(), filenames.end(), filename);
+   if (it == filenames.end()) {
+      lexer::lloc.filenr = lexer::filenames.size();
+      lexer::filenames.push_back (filename);
+   } else {
+      lexer::lloc.filenr = it - filenames.begin();
+   }
 }
 
 void lexer::advance() {
@@ -75,51 +82,168 @@ void lexer::include() {
       lexer::newfilename (filename);
       
       //Output to log stream if we are scanning
-      if (scanning) {
-         log << "#" << setw(3) << lexer::lloc.filenr
-             << " \"" << setw(0) << lexer::filenames.back() << "\"" 
+      if (logging) {
+         log << "#" << setw(3) << lloc.filenr
+             << " \"" << setw(0) << filenames.at(lloc.filenr) << "\"" 
              << endl;
       }
    }
 }
 
 
-int lexer::scan (const char* file) {
+bool lexer::initializeLog(const char* file) {
    //Generate .tok file
    string outputName(file);
-   outputName = outputName.substr(0, outputName.find("."));
    string tokName = outputName + ".tok";
    log.open(tokName);
-   int symbol = 0;
    //Mark that we are scanning so we get include output
-   scanning = true;
+   logging = log;
    
-   //Start Scan Loop
-   while ((symbol = yylex())) {
-      if (symbol == 0) {
-         delete yylval;
-         break;
-      } else {
-         //Dump symbol
-         log << setw(4) << yylval->lloc.filenr
-             << setw(4) << yylval->lloc.linenr << "."
-             << setw(3) << setfill('0') << yylval->lloc.offset
-             << setw(5) << setfill(' ') << symbol << "  "
-             << setw(16) << left << parser::get_tname(symbol) << "("
-             << setw(0) << *(yylval->lexinfo) << ")" << right
-             << endl;
-         delete yylval;
-      }
-   }
-   
-   //Reset scanning flag
-   scanning = false;
-   log.close();
-
-   return pclose(yyin);
+   return logging;
 }
+   
+   
+void lexer::terminateLog() {
+   //Reset logging flag
+   if (logging) {
+      logging = false;
+      log.close();
+   }
+}
+
+
+void lexer::output(int symbol) {
+   if ((logging) && (symbol != 0)) {
+      //Dump symbol
+      log << setw(4) << yylval->lloc.filenr
+          << setw(4) << yylval->lloc.linenr << "."
+          << setw(3) << setfill('0') << yylval->lloc.offset
+          << setw(5) << setfill(' ') << symbol << "  "
+          << setw(16) << left << parser::get_tname(symbol) << "("
+          << setw(0) << *(yylval->lexinfo) << ")" << right
+          << endl;
+   }
+}
+
 
 void yyerror (const char* message) {
    assert (not lexer::filenames.empty());
    errllocprintf (lexer::lloc, "%s\n", message);
 }
+
+
+
+
+//PARSER-FUNCTIONALITY-------------------------------------------------
+
+bool parser::log(const char* filename) {
+    //Generate .ast file
+   string outputName(filename);
+   string tokName = outputName + ".ast";
+   FILE* log;
+   log = fopen(tokName.c_str(), "w");
+   bool result = false;
+   
+   if (log) {
+      astree::print(log, root);
+      fclose(log);
+      result = true;
+   }
+   
+   return result;
+}
+
+
+
+
+//PARSER-HELPER--------------------------------------------------------
+
+astree* parseFn(astree* ident, astree* param, astree* toss) {
+   astree* result = new astree(TOK_FUNCTION, 
+                               ident->lloc, 
+                               ident->lexinfo->c_str());
+   
+   //We have an unitialized param
+   if (param->symbol != TOK_PARAMLIST) {
+      param->symbol = TOK_PARAMLIST;
+   }
+   
+   result->adopt(ident, param);
+   
+   free(toss);
+   
+   return result;
+   
+}
+
+
+astree* parseFn(astree* fn, astree* block) {
+   if ((block->children.size() == 0) && (*block->lexinfo == ";")) {
+      fn->symbol = TOK_PROTOTYPE;
+   } else {
+      fn->adopt(block);
+   }
+   
+   return fn;
+}
+
+astree* parseIf(astree* ifast, astree* expr, astree* stmt,
+                astree* toss1, astree* toss2) {
+   ifast->adopt(expr, stmt);
+   free(toss1, toss2);
+   return ifast;
+}
+
+astree* parseIf(astree* ifast, astree* expr, astree* stmt1,
+                astree* stmt2, astree* toss1, astree* toss2,
+                astree* toss3) {
+   ifast->adopt(expr, stmt1, stmt2);
+   free(toss1, toss2, toss3);
+   return ifast;
+}
+
+astree* parseVarDec(astree* ident, astree* equals, astree* expr,
+                    astree* toss) {
+   equals->adopt(TOK_VARDECL, ident, expr);
+   free(toss);
+   return equals;
+}
+
+astree* parseRetVoid(astree* returnast, astree* toss) {
+   free(toss);
+   returnast->sym(TOK_RETURNVOID);
+   return returnast;
+}
+
+astree* parseAlloc(astree* newast, astree* type,
+                   astree* toss1, astree* toss2) {
+   free(toss1, toss2);
+   newast->adopt(type, TOK_TYPEID);
+   return newast;
+}
+
+astree* parseAlloc(astree* newast, astree* type, astree* expr,
+                   astree* toss1, astree* toss2) {
+   free(toss1, toss2);
+   if (type->symbol == TOK_STRING) {
+      newast->adopt(TOK_NEWSTRING, type, expr);
+   } else {
+      newast->adopt(TOK_NEWARRAY, type, expr);
+   }
+   return newast;
+}
+
+astree* parseCall(astree* ident, astree* paren,
+                  astree* expr) {
+   paren->adopt(TOK_CALL, ident);
+   if (expr != nullptr) paren->adopt(expr);
+   return paren;
+}
+
+astree* parseIndex(astree* expr1, astree* bracket, astree* expr2,
+                   astree* toss) {
+   free(toss);
+   bracket->adopt(TOK_INDEX, expr1, expr2);
+   return bracket;
+}
+

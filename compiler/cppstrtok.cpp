@@ -58,10 +58,10 @@ void cpplines (FILE* pipe, char* filename) {
    
    //Print .str
    FILE* file;
-   string outputName(filename);
-   outputName = outputName.substr(0, outputName.find("."));
+   string fname(filename);
+   fname = fname.substr(0, fname.find_last_of("."));
    DEBUGF('o', "Generating .str...");
-   string strName = outputName + ".str";
+   string strName = fname + ".str";
    file = fopen(strName.c_str(), "w");
    stringset::dump(file);
    fclose(file);
