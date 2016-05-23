@@ -21,7 +21,7 @@ struct symbol {
    size_t block_nr;
    vector<symbol*>* parameters;
    
-   void insert_symbol(const string* lex);
+   void insert_symbol(string* lex);
    
    //Static Functionality
    static vector<symbol_table*> symbol_stack;

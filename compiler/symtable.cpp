@@ -5,7 +5,7 @@ vector<size_t> symbol::block_stack = {0};
 symbol_table* symbol::struct_def_table = nullptr;
 size_t symbol::next_block = 1;
 
-void symbol::insert_symbol(const string* lex) {
+void symbol::insert_symbol(string* lex) {
    //if we don't have an existing table
    if ((symbol_stack.size() > 0) && (symbol_stack.back() != nullptr)){
       symbol_stack.push_back(new symbol_table());

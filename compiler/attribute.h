@@ -13,7 +13,9 @@ enum Attributes {
    ATTR_var, ATTR_field, ATTR_typeid, ATTR_param, ATTR_lval,
    ATTR_const, ATTR_vreg, ATTR_vaddr, ATTR_size
 };
+
 using attr_bitset = bitset<ATTR_size>;
+
 const map<int, string> attributeStrings = {
    {ATTR_void,   "void"    },    {ATTR_bool,   "bool"    },
    {ATTR_char,   "char"    },    {ATTR_int,    "int"     },

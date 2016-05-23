@@ -26,6 +26,7 @@ struct astree {
    const string* lexinfo;    // pointer to lexical information
    vector<astree*> children; // children of this n-way node
    attr_bitset attributes;   // attributes
+   size_t block_nr;
 
    // Ctor / Dtor
    astree(int symbol, const location&, const char* lexinfo);
@@ -42,7 +43,7 @@ struct astree {
    astree* sym(int symbol);
    
    //Type Check
-   void typeCheck();
+   void typeCheck(bool recurse = false);
    
    //Printing Fns
    void dump_node(FILE*);

@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
             lexer::terminateLog();
             
             //Type Check
-            
+            parser::root->typeCheck(true);
             
             //Generate .ast file
             parser::log(fname.c_str());
