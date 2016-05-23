@@ -103,15 +103,27 @@ int main(int argc, char** argv) {
             cpplines(cppFile, filename);
             pclose(cppFile);
             
-            //Generate .tok file
+            //Generate .tok
             yyin = popen(command.c_str(), "r");
             lexer::initializeLog(fname.c_str());
             yyparse();
             lexer::terminateLog();
+            
+            //Type Check
+            
+            
+            //Generate .ast file
             parser::log(fname.c_str());
+            //Generate .sym file
+            //------
+            
+            //Check if bison / flex failed
             int lclose_rc = pclose(yyin);
             eprint_status(command.c_str(), lclose_rc);
             if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
+            else {
+               
+            }
          }
       }
       

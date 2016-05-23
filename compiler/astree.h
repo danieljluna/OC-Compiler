@@ -5,8 +5,10 @@
 
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
+#include "attribute.h"
 #include "auxlib.h"
 #include "stringset.h"
 
@@ -23,11 +25,13 @@ struct astree {
    location lloc;            // source location
    const string* lexinfo;    // pointer to lexical information
    vector<astree*> children; // children of this n-way node
+   attr_bitset attributes;   // attributes
 
-   // Functions.
+   // Ctor / Dtor
    astree(int symbol, const location&, const char* lexinfo);
    ~astree();
-   //adopt is formated so any symbols present alter the preceding ast
+   
+   //Adopting Fns (sym always immediately follows astree it modifies)
    astree* adopt(astree* child1, 
                  astree* child2 = nullptr, 
                  astree* child3 = nullptr);
@@ -36,8 +40,15 @@ struct astree {
    astree* adopt(astree* child1, astree* child2, int sym2);
    astree* adopt(astree* child1, int sym1, astree* child2, int sym2);
    astree* sym(int symbol);
+   
+   //Type Check
+   void typeCheck();
+   
+   //Printing Fns
    void dump_node(FILE*);
    void dump_tree(FILE*, int depth = 0);
+   
+   //Static fns
    static void dump(FILE* outfile, astree* tree);
    static void print(FILE* outfile, astree* tree, int depth = 0);
 };

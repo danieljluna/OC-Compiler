@@ -137,7 +137,7 @@ void yyerror (const char* message) {
 //PARSER-FUNCTIONALITY-------------------------------------------------
 
 bool parser::log(const char* filename) {
-    //Generate .ast file
+   //Generate .ast file
    string outputName(filename);
    string tokName = outputName + ".ast";
    FILE* log;

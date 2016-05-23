@@ -9,8 +9,8 @@ GRIND     = valgrind --leak-check=full --show-reachable=yes
 FLEX      = flex --header-file=${LEXHDR} --outfile=${LEXCPP}
 BISON     = bison --defines=${PARSEHDR} --output=${PARSECPP}
 
-MODULES   = astree auxlib cppstrtok lyutils stringset
-HDRSRC    = ${MODULES:=.h}
+MODULES   = astree auxlib cppstrtok lyutils stringset symtable
+HDRSRC    = ${MODULES:=.h} attribute.h
 CPPSRC    = ${MODULES:=.cpp} main.cpp
 FLEXSRC   = scanner.l
 BISONSRC  = parser.y

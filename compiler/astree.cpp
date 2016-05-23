@@ -11,6 +11,7 @@
 #include "stringset.h"
 #include "lyutils.h"
 
+
 astree::astree (int symbol_, const location& lloc_, const char* info) {
    symbol = symbol_;
    lloc = lloc_;
@@ -66,11 +67,25 @@ astree* astree::sym(int symbol_) {
    return this;
 }
 
+void astree::typeCheck() {
+   
+   switch (symbol) {
+   }
+   //Assign Attributes
+   
+}
+
 void astree::dump_node (FILE* outfile) {
    fprintf (outfile, "%p->{%s %zd.%zd.%zd \"%s\"}",
             this, parser::get_tname (symbol),
             lloc.filenr, lloc.linenr, lloc.offset,
             lexinfo->c_str());
+            
+   for (size_t i = 0; i < ATTR_size; ++i) {
+      if (attributes[i]) {
+         fprintf(outfile, " %s", attributeStrings.at(i).c_str());
+      }
+   }
             
    if (children.size() > 0)
       fprintf(outfile, ":");
