@@ -1,16 +1,18 @@
-
 struct foo {
    bool [] a;
    void n;
 }
-{ 
-    string b = new string (5 + 1);
-    int c = new int [-5];
-    blah xkcd = new blah();
+
+bool bob(int a, bool b);
+
+{
+   bool b = bob(10, true);
+   int c = new int [-5];
+   blah xkcd = new blah();
 }
-    
-a.qr[6 / (7 - 5) % 2];
 
-(5 < 67);
 
-(5 + -1);
+bool bob(int a, bool b) {
+   char c = 'c';
+   a = 5;
+}

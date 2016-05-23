@@ -11,22 +11,18 @@ using namespace std;
 #include "attribute.h"
 #include "auxlib.h"
 #include "stringset.h"
-
-struct location {
-   size_t filenr;
-   size_t linenr;
-   size_t offset;
-};
+#include "symtable.h"
 
 struct astree {
 
    // Fields.
-   int symbol;               // token code
+   int token;                // token code
    location lloc;            // source location
    const string* lexinfo;    // pointer to lexical information
    vector<astree*> children; // children of this n-way node
    attr_bitset attributes;   // attributes
    size_t block_nr;          // block number
+   symbol* identSym;         // if ident, points to symbol
 
    // Ctor / Dtor
    astree(int symbol, const location&, const char* lexinfo);

@@ -178,13 +178,13 @@ constant    : TOK_INTCON            { $$ = $1; }
             
 //Universally-Useful-Rules---------------------------------------------
 
-block       : '{' '}'               { free($2); $$ = $1; }
+block       : '{' '}'               { free($2); $$=$1->sym(TOK_BLOCK);}
             | blockstmts '}'        { free($2); $$ = $1; }    
             | ';'                   { $$ = $1; }
             ;
             
 blockstmts  : blockstmts stmt       { $$ = $1->adopt($2); }
-            | '{' stmt              { $$ = $1->adopt($2); }
+            | '{' stmt              { $$ = $1->adopt(TOK_BLOCK, $2); }
             ;
 
 identdec    : basetype ident        { $$=$1->adopt($2,TOK_DECLID); }

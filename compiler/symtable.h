@@ -4,25 +4,37 @@
 #include <vector>
 #include <unordered_map>
 
-#include "astree.h"
+#include "auxlib.h"
 #include "attribute.h"
 
 using namespace std;
 
+struct location {
+   size_t filenr;
+   size_t linenr;
+   size_t offset;
+};
+
 struct symbol;
 
-using symbol_table = unordered_map<string*, symbol*>;
+using symbol_table = unordered_map<const string*, symbol*>;
 using symbol_entry = symbol_table::value_type;
 
+struct astree;
+
 struct symbol {
+   
    attr_bitset attributes;
-   symbol_table* fields;
-   location lloc;
-   string* lexInfo;
+   location decloc;
    size_t block_nr;
+   symbol_table* fields;
    vector<symbol*>* parameters;
    
-   void insert_symbol();
+   //Ctor
+   symbol(astree* origin);
+   
+   //Insert this symbol to static tables
+   void insert_symbol(const string* lexinfo);
    
    //Static Functionality
    static vector<symbol_table*> symbol_stack;
@@ -34,7 +46,7 @@ struct symbol {
    static void exit_block();
    static symbol* find_ident(string* ident);
    
-   static int recurseSymTable(astree* subTree, size_t block_nr);
+   static int recurseSymTable(astree* subTree);
    static int buildSymTable(astree* root);
    
 };

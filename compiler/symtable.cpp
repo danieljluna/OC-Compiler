@@ -1,5 +1,4 @@
 #include "symtable.h"
-#include "auxlib.h"
 #include "lyutils.h"
 #include <exception>
 
@@ -8,13 +7,27 @@ vector<size_t> symbol::block_stack = {0};
 symbol_table* symbol::struct_def_table = nullptr;
 size_t symbol::next_block = 1;
 
-void symbol::insert_symbol() {
+symbol::symbol(astree* origin) {
+   attributes = origin->attributes;
+   decloc = origin->lloc;
+   block_nr = block_stack.back();
+   origin->identSym = this;
+   
+   insert_symbol(origin->lexinfo);
+}
+
+
+
+
+void symbol::insert_symbol(const string* lexinfo) {
    //if we don't have an existing table
-   if ((symbol_stack.size() > 0) && (symbol_stack.back() != nullptr)){
+   if (symbol_stack.size() == 0) {
       symbol_stack.push_back(new symbol_table());
+   } else if (symbol_stack.back() == nullptr) {
+      symbol_stack.back() = new symbol_table();
    }
    
-   symbol_stack.back()->emplace(lexInfo, this);
+   symbol_stack.back()->emplace(lexinfo, this);
 }
 
 
@@ -59,18 +72,20 @@ symbol* symbol::find_ident(string* ident) {
 
 
 
-int symbol::recurseSymTable(astree* subTree, size_t block_nr) {
-   if (subTree->symbol == '{') {
+int symbol::recurseSymTable(astree* subTree) {
+   subTree->block_nr = block_stack.back();
+   
+   if (subTree->token == TOK_BLOCK) {
       enter_block();
    }
    
    for (astree* child: subTree->children) {
-         recurseSymTable(child, block_nr);
+      recurseSymTable(child);
    }
    
    //Attribute switch
-   switch (subTree->symbol) {
-   case '{':
+   switch (subTree->token) {
+   case TOK_BLOCK:
       exit_block();
       break;
    case TOK_VOID:
@@ -127,7 +142,7 @@ int symbol::recurseSymTable(astree* subTree, size_t block_nr) {
 
 int symbol::buildSymTable(astree* root) {
    try {
-      recurseSymTable(root, 0);
+      recurseSymTable(root);
       return 0;
    } catch (exception& e) {
       eprintf("%s\n", e.what());

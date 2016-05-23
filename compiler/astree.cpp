@@ -13,10 +13,11 @@
 
 
 astree::astree (int symbol_, const location& lloc_, const char* info) {
-   symbol = symbol_;
+   token = symbol_;
    lloc = lloc_;
    lexinfo = stringset::intern (info);
    block_nr = 0;
+   identSym = nullptr;
    // vector defaults to empty -- no children
 }
 
@@ -43,35 +44,35 @@ astree* astree::adopt (astree* child1,
 }
 
 astree* astree::adopt(int rootSym, astree* child1, astree* child2){
-   symbol = rootSym;
+   token = rootSym;
    return adopt (child1, child2);
 }
 
 astree* astree::adopt(astree* child1, int sym1, astree* child2) {
-   child1->symbol = sym1;
+   child1->token = sym1;
    return adopt(child1, child2);
 }
 
 astree* astree::adopt(astree* child1, astree* child2, int sym2) {
-    child2->symbol = sym2;
+    child2->token = sym2;
     return adopt(child1, child2);
 }
 
 astree* astree::adopt(astree* child1,int sym1,astree* child2,int sym2){
-    child1->symbol = sym1;
-    child2->symbol = sym2;
+    child1->token = sym1;
+    child2->token = sym2;
     return adopt(child1, child2);
 }
 
 astree* astree::sym(int symbol_) {
-   symbol = symbol_;
+   token = symbol_;
    return this;
 }
 
 
 void astree::dump_node (FILE* outfile) {
    fprintf (outfile, "%p->{%s %zd.%zd.%zd \"%s\"}",
-            this, parser::get_tname (symbol),
+            this, parser::get_tname (token),
             lloc.filenr, lloc.linenr, lloc.offset,
             lexinfo->c_str());
             
@@ -107,21 +108,29 @@ void astree::print (FILE* outfile, astree* tree, int depth) {
    for (int i = 0; i < depth; ++i)
       fprintf (outfile, "|  ");
    
-   //Trim TOK_ from symbol name
-   const char* name = parser::get_tname (tree->symbol);
+   //Trim TOK_ from token name
+   const char* name = parser::get_tname (tree->token);
    if (name[0] == 'T') {
        name = name + 4;
    }
    
    //Print astree
-   fprintf (outfile, "%s \"%s\" (%zd.%zd.%zd)",
+   fprintf (outfile, "%s \"%s\" (%zd.%zd.%zd) {%zd}",
             name, tree->lexinfo->c_str(),
-            tree->lloc.filenr, tree->lloc.linenr, tree->lloc.offset);
+            tree->lloc.filenr, tree->lloc.linenr, tree->lloc.offset,
+            tree->block_nr);
             
    for (size_t i = 0; i < ATTR_size; ++i) {
       if (tree->attributes[i]) {
          fprintf(outfile, " %s", attributeStrings.at(i).c_str());
       }
+   }
+   
+   if (tree->identSym != nullptr) {
+      fprintf (outfile, " (%zd.%zd.%zd)", 
+               tree->identSym->decloc.filenr,
+               tree->identSym->decloc.linenr,
+               tree->identSym->decloc.offset);
    }
    
    fprintf (outfile, "\n");

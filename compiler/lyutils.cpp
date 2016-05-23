@@ -164,8 +164,8 @@ astree* parseFn(astree* ident, astree* param, astree* toss) {
                                ident->lexinfo->c_str());
    
    //We have an unitialized param
-   if (param->symbol != TOK_PARAMLIST) {
-      param->symbol = TOK_PARAMLIST;
+   if (param->token != TOK_PARAMLIST) {
+      param->token = TOK_PARAMLIST;
    }
    
    result->adopt(ident, param);
@@ -179,7 +179,7 @@ astree* parseFn(astree* ident, astree* param, astree* toss) {
 
 astree* parseFn(astree* fn, astree* block) {
    if ((block->children.size() == 0) && (*block->lexinfo == ";")) {
-      fn->symbol = TOK_PROTOTYPE;
+      fn->token = TOK_PROTOTYPE;
    } else {
       fn->adopt(block);
    }
@@ -225,7 +225,7 @@ astree* parseAlloc(astree* newast, astree* type,
 astree* parseAlloc(astree* newast, astree* type, astree* expr,
                    astree* toss1, astree* toss2) {
    free(toss1, toss2);
-   if (type->symbol == TOK_STRING) {
+   if (type->token == TOK_STRING) {
       newast->adopt(TOK_NEWSTRING, type, expr);
    } else {
       newast->adopt(TOK_NEWARRAY, type, expr);
