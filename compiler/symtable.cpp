@@ -1,17 +1,20 @@
 #include "symtable.h"
+#include "auxlib.h"
+#include "lyutils.h"
+#include <exception>
 
 vector<symbol_table*> symbol::symbol_stack = {};
 vector<size_t> symbol::block_stack = {0};
 symbol_table* symbol::struct_def_table = nullptr;
 size_t symbol::next_block = 1;
 
-void symbol::insert_symbol(string* lex) {
+void symbol::insert_symbol() {
    //if we don't have an existing table
    if ((symbol_stack.size() > 0) && (symbol_stack.back() != nullptr)){
       symbol_stack.push_back(new symbol_table());
    }
    
-   symbol_stack.back()->emplace(lex, this);
+   symbol_stack.back()->emplace(lexInfo, this);
 }
 
 
@@ -56,7 +59,66 @@ symbol* symbol::find_ident(string* ident) {
 
 
 
-static int recurseSymTable(astree* subTree) {
+int symbol::recurseSymTable(astree* subTree, size_t block_nr) {
+   if (subTree->symbol == '{') {
+      enter_block();
+   }
+   
+   for (astree* child: subTree->children) {
+         recurseSymTable(child, block_nr);
+   }
+   
+   //Attribute switch
+   switch (subTree->symbol) {
+   case '{':
+      exit_block();
+      break;
+   case TOK_VOID:
+      subTree->attributes.set(ATTR_void, 1);
+      break;
+   case TOK_TRUE:
+   case TOK_FALSE:
+      subTree->attributes.set(ATTR_const, 1);
+   case TOK_BOOL:
+      subTree->attributes.set(ATTR_bool, 1);
+      break;
+   case TOK_CHARCON:
+      subTree->attributes.set(ATTR_const, 1);
+   case TOK_CHAR:
+      subTree->attributes.set(ATTR_char, 1);
+      break;
+   case TOK_INTCON:
+      subTree->attributes.set(ATTR_const, 1);
+   case TOK_INT:
+      subTree->attributes.set(ATTR_int, 1);
+      break;
+   case TOK_STRINGCON:
+      subTree->attributes.set(ATTR_const, 1);
+   case TOK_STRING:
+      subTree->attributes.set(ATTR_string, 1);
+      break;
+   case TOK_NULL:
+      subTree->attributes.set(ATTR_const, 1);
+      subTree->attributes.set(ATTR_null, 1);
+      break;
+   case TOK_STRUCT:
+      subTree->attributes.set(ATTR_struct, 1);
+      break;
+   case TOK_ARRAY:
+      subTree->attributes.set(ATTR_array, 1);
+      break;
+   case TOK_FIELD:
+      subTree->attributes.set(ATTR_field, 1);
+      break;
+   case TOK_PARAMLIST:
+      for (astree* child : subTree->children) {
+         child->attributes.set(ATTR_param, 1);
+      }
+      break;
+   default:
+      break;
+   }
+   
    return 0;
 }
 
@@ -64,5 +126,11 @@ static int recurseSymTable(astree* subTree) {
 
 
 int symbol::buildSymTable(astree* root) {
-   return 0;
+   try {
+      recurseSymTable(root, 0);
+      return 0;
+   } catch (exception& e) {
+      eprintf("%s\n", e.what());
+      return -1;
+   }
 }

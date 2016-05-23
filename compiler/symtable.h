@@ -18,10 +18,11 @@ struct symbol {
    attr_bitset attributes;
    symbol_table* fields;
    location lloc;
+   string* lexInfo;
    size_t block_nr;
    vector<symbol*>* parameters;
    
-   void insert_symbol(string* lex);
+   void insert_symbol();
    
    //Static Functionality
    static vector<symbol_table*> symbol_stack;
@@ -33,7 +34,7 @@ struct symbol {
    static void exit_block();
    static symbol* find_ident(string* ident);
    
-   static int recurseSymTable(astree* subTree);
+   static int recurseSymTable(astree* subTree, size_t block_nr);
    static int buildSymTable(astree* root);
    
 };

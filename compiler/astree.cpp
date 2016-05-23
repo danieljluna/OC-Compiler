@@ -16,6 +16,7 @@ astree::astree (int symbol_, const location& lloc_, const char* info) {
    symbol = symbol_;
    lloc = lloc_;
    lexinfo = stringset::intern (info);
+   block_nr = 0;
    // vector defaults to empty -- no children
 }
 
@@ -67,59 +68,6 @@ astree* astree::sym(int symbol_) {
    return this;
 }
 
-void astree::typeCheck(bool recurse) {
-   
-   if (recurse) {
-      for (astree* child: children) {
-         child->typeCheck(recurse);
-      }
-   }
-   
-   
-   switch (symbol) {
-   case TOK_VOID:
-      attributes.set(ATTR_void, 1);
-      break;
-   case TOK_TRUE:
-   case TOK_FALSE:
-      attributes.set(ATTR_const, 1);
-   case TOK_BOOL:
-      attributes.set(ATTR_bool, 1);
-      break;
-   case TOK_CHARCON:
-      attributes.set(ATTR_const, 1);
-   case TOK_CHAR:
-      attributes.set(ATTR_char, 1);
-      break;
-   case TOK_INTCON:
-      attributes.set(ATTR_const, 1);
-   case TOK_INT:
-      attributes.set(ATTR_int, 1);
-      break;
-   case TOK_STRINGCON:
-      attributes.set(ATTR_const, 1);
-   case TOK_STRING:
-      attributes.set(ATTR_string, 1);
-      break;
-   case TOK_NULL:
-      attributes.set(ATTR_const, 1);
-      attributes.set(ATTR_null, 1);
-      break;
-   case TOK_STRUCT:
-      attributes.set(ATTR_struct, 1);
-      break;
-   case TOK_ARRAY:
-      attributes.set(ATTR_array, 1);
-      break;
-   case TOK_FIELD:
-      attributes.set(ATTR_field, 1);
-      break;
-   default:
-      break;
-   }
-   //Assign Attributes
-   
-}
 
 void astree::dump_node (FILE* outfile) {
    fprintf (outfile, "%p->{%s %zd.%zd.%zd \"%s\"}",

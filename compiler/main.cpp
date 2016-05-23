@@ -10,6 +10,7 @@
 #include "auxlib.h"
 #include "lyutils.h"
 #include "cppstrtok.h"
+#include "symtable.h"
 
 using namespace std;
 
@@ -110,7 +111,7 @@ int main(int argc, char** argv) {
             lexer::terminateLog();
             
             //Type Check
-            parser::root->typeCheck(true);
+            symbol::buildSymTable(parser::root);
             
             //Generate .ast file
             parser::log(fname.c_str());
