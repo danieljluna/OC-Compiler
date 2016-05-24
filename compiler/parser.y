@@ -67,7 +67,7 @@ structdec   : TOK_STRUCT ident      { $$ = $1->adopt($2, TOK_TYPEID);}
          
 structdef   : fielddecs '}'         { $$ = $1; free($2); }
             | structdec '{' '}'     { $$ = $1; free($2, $3); }
-            | structdec ';'         { $$ = $1->adopt(TOK_STRPROTO, $2);}
+            | structdec ';'         { $$ = $1->adopt(TOK_STRPROTO,$2);}
             ;
             
 fielddecs   : fielddecs fielddec ';'   
