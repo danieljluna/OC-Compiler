@@ -44,6 +44,10 @@ void symbol::dumpEntry(FILE* file, symbol_entry symEntry) {
       for (size_t i = 0; i < ATTR_size; ++i) {
          if (symEntry.second->attributes[i]) {
             fprintf(file, " %s", attributeStrings.at(i).c_str());
+            if ((i == ATTR_struct) || (i == ATTR_typeid)) {
+               fprintf(file, " \"%s\"", 
+                        symEntry.second->structName->c_str());
+            }
          }
       }
    }
@@ -52,7 +56,8 @@ void symbol::dumpEntry(FILE* file, symbol_entry symEntry) {
 
 
 
-void symbol::insert_symbol(const string* lexinfo) {
+void symbol::insert_symbol(const string* lexinfo,
+                           const string* structname) {
    //if we don't have an existing table
    if (symbol_stack.size() == 0) {
       symbol_stack.push_back(new symbol_table());
@@ -60,6 +65,7 @@ void symbol::insert_symbol(const string* lexinfo) {
       symbol_stack.back() = new symbol_table();
    }
    
+   structName = structname;
    auto entry = symbol_stack.back()->emplace(lexinfo, this);
    
    if (symFile) {
@@ -87,7 +93,7 @@ void symbol::exit_block() {
 
 
 
-symbol* symbol::find_ident(string* ident) {
+symbol* symbol::find_ident(const string* ident) {
    //For each symTable in the stack
    for (auto it = symbol_stack.rbegin();
         it < symbol_stack.rend();
@@ -109,7 +115,31 @@ symbol* symbol::find_ident(string* ident) {
 
 
 
+symbol* symbol::find_field(const string* structName,
+                           const string* fieldName) {
+   //If there is a struct matching this name
+   if (symbol_stack.front() != nullptr) {
+      auto it = symbol_stack.front()->find(structName);
+      if (it != symbol_stack.front()->end()) {
+         //If there are fields in the struct
+         if (it->second->fields != nullptr) {
+            auto symbolIt = it->second->fields->find(fieldName);
+            //If we found the symbol
+            if (symbolIt != (it)->second->fields->end()) {
+               return symbolIt->second;
+            }
+         }
+      }
+   }
+   
+   return nullptr;
+}
+
+
+
+
 int symbol::recurseSymTable(astree* subTree) {
+   
    subTree->block_nr = block_stack.back();
    
    if (subTree->token == TOK_BLOCK) {
@@ -121,8 +151,8 @@ int symbol::recurseSymTable(astree* subTree) {
    }
    
    symbol* createdSymbol = nullptr;
-   astree* tempAST = nullptr;
-   
+   //astree* tempAST = nullptr;
+
    //Attribute switch
    switch (subTree->token) {
    case TOK_BLOCK:
@@ -189,6 +219,38 @@ int symbol::recurseSymTable(astree* subTree) {
    case TOK_CHR:
       typeCheck_unary_op(subTree, ATTR_int, ATTR_char);
       break;
+   //NEW-OPS-----------------------------------------------------------
+   case TOK_NEW:
+      if (!subTree->children[0]->attributes[ATTR_typeid]) {
+         symErrPrint(subTree,
+               "Identifier must by a valid typeid for allocations!");
+      } else {
+         subTree->attributes.set(ATTR_struct, 1);
+         subTree->attributes.set(ATTR_vreg, 1);
+      }
+      break;
+   case TOK_NEWSTRING:
+      if (!subTree->children[1]->attributes[ATTR_int] ||
+          (subTree->children[1]->attributes[ATTR_array])) {
+         symErrPrint(subTree,
+               "Allocated string size must be an int!");
+      } else {
+         subTree->attributes.set(ATTR_string, 1);
+         subTree->attributes.set(ATTR_vreg, 1);
+      }
+      break;
+   case TOK_NEWARRAY:
+      if (!subTree->children[1]->attributes[ATTR_int] ||
+          (subTree->children[1]->attributes[ATTR_array])) {
+         symErrPrint(subTree,
+               "Allocated array size must be an int!");
+      } else {
+         copyType(subTree->attributes, 
+                  subTree->children[0]->attributes);
+         subTree->attributes.set(ATTR_array, 1);
+         subTree->attributes.set(ATTR_vreg, 1);
+      }
+      break;
    //BASETYPES-&-CONSTS------------------------------------------------
    case TOK_VOID:
       subTree->attributes.set(ATTR_void, 1);
@@ -218,13 +280,25 @@ int symbol::recurseSymTable(astree* subTree) {
       subTree->attributes.set(ATTR_const, 1);
       subTree->attributes.set(ATTR_null, 1);
       break;
-   //------------------------------------------------------------------
-   case TOK_ARRAY:
-      subTree->attributes.set(ATTR_array, 1);
+   //ELEMENT-&&-ACCESS-------------------------------------------------
+   case TOK_INDEX:
       break;
-   case TOK_FIELD:
-      subTree->attributes.set(ATTR_field, 1);
+   //STRUCTS-&&-FIELDS-------------------------------------------------
+   case TOK_STRUCT:
       break;
+   case '.':
+      if ((!subTree->children[0]->attributes[ATTR_struct]) ||
+          (subTree->children[0]->attributes[ATTR_array])) {
+         symErrPrint(subTree,
+               "Identifier must be a struct for field allocation!");
+      } else {
+         subTree->attributes.set(ATTR_vaddr, 1);
+         subTree->attributes.set(ATTR_lval, 1);
+      }
+      break;
+   case TOK_TYPEID:
+      break;
+   //FUNCTIONS-&&-PARAMS-----------------------------------------------
    case TOK_PARAMLIST:
       for (astree* child : subTree->children) {
          child->attributes.set(ATTR_param, 1);
@@ -237,7 +311,6 @@ int symbol::recurseSymTable(astree* subTree) {
    if (createdSymbol != nullptr) {
       createdSymbol->insert_symbol(subTree->lexinfo);
    }
-   
    
    return 0;
 }

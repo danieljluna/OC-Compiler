@@ -123,8 +123,13 @@ void astree::print (FILE* outfile, astree* tree, int depth) {
    for (size_t i = 0; i < ATTR_size; ++i) {
       if (tree->attributes[i]) {
          fprintf(outfile, " %s", attributeStrings.at(i).c_str());
-         if (i == ATTR_struct) {
-            //fprintf(" %s", tree->identSym->);
+         
+         if ((i == ATTR_struct) && (tree->identSym != nullptr)) {
+            const string* temp = tree->identSym->structName;
+            if (temp != nullptr) {
+               fprintf(outfile,
+                     " \"%s\"", temp->c_str());
+            }
          }
       }
    }

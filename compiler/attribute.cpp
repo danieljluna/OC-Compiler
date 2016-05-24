@@ -42,7 +42,6 @@ bool isCompatible(const attr_bitset& attr1,
    } else {
       //Check that types match
       result = true;
-      bool foundType = false;
       for (size_t i = 0; i < ATTR_array; ++i) {
          //Break if types don't match
          if (attr1[i] != attr2[i]) {
@@ -58,4 +57,13 @@ bool isCompatible(const attr_bitset& attr1,
    }
    
    return result;
+}
+
+
+
+
+void copyType(attr_bitset& target, const attr_bitset& source) {
+   for (size_t i = 0; i < ATTR_fn; ++i) {
+      target[i] = source[i];
+   }
 }

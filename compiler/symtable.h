@@ -29,7 +29,7 @@ struct symbol {
    size_t block_nr;
    symbol_table* fields;
    vector<symbol*>* parameters;
-   string* structName;
+   const string* structName = nullptr;
    
    //Ctor
    symbol(astree* origin);
@@ -39,7 +39,8 @@ struct symbol {
    static void dumpEntry(FILE* file, symbol_entry symEntry);
    
    //Insert this symbol to static tables
-   void insert_symbol(const string* lexinfo);
+   void insert_symbol(const string* lexinfo,
+                      const string* structname = nullptr);
    
    //Static Functionality
    static vector<symbol_table*> symbol_stack;
@@ -49,7 +50,9 @@ struct symbol {
    
    static void enter_block();
    static void exit_block();
-   static symbol* find_ident(string* ident);
+   static symbol* find_ident(const string* ident);
+   static symbol* find_field(const string* structName, 
+                             const string* field);
    
    static int recurseSymTable(astree* subTree);
    static int buildSymTable(astree* root);

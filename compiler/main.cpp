@@ -110,21 +110,20 @@ int main(int argc, char** argv) {
             yyparse();
             lexer::terminateLog();
             
-            //Type Check
-            //Generate .sym file
-            symbol::log(fname.c_str());
-            symbol::buildSymTable(parser::root);
-            symbol::endLog();
-            
-            //Generate .ast file
-            parser::log(fname.c_str());
-            
             //Check if bison / flex failed
             int lclose_rc = pclose(yyin);
             eprint_status(command.c_str(), lclose_rc);
             if (lclose_rc != 0) set_exitstatus(EXIT_FAILURE);
             else {
+               //Type Check
+               //Generate .sym file
+               parser::log(fname.c_str());
+               symbol::log(fname.c_str());
+               symbol::buildSymTable(parser::root);
+               symbol::endLog();
                
+               //Generate .ast file
+               parser::log(fname.c_str());
             }
          }
       }

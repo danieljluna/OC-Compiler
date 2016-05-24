@@ -34,7 +34,6 @@ bool isReference(const attr_bitset& attribute);
 bool isBase(const attr_bitset& attribute);
 bool isCompatible(const attr_bitset& attr1, 
                   const attr_bitset& attr2);
-
-
+void copyType(attr_bitset& target, const attr_bitset& source);
 
 #endif
