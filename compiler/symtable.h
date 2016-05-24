@@ -40,7 +40,7 @@ struct symbol {
    
    //Insert this symbol to static tables
    void insert_symbol(const string* lexinfo,
-                      const string* structname = nullptr);
+                      bool isStruct = false);
    
    //Static Functionality
    static vector<symbol_table*> symbol_stack;
@@ -74,6 +74,8 @@ void typeCheck_unary_op(astree* ast,
                         Attributes operand, 
                         Attributes result);
 
+
+symbol* generateIdent(astree* ast);
 
 
 #endif

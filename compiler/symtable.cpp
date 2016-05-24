@@ -50,6 +50,8 @@ void symbol::dumpEntry(FILE* file, symbol_entry symEntry) {
             }
          }
       }
+      
+      fprintf(file, "\n");
    }
 }
 
@@ -57,16 +59,26 @@ void symbol::dumpEntry(FILE* file, symbol_entry symEntry) {
 
 
 void symbol::insert_symbol(const string* lexinfo,
-                           const string* structname) {
-   //if we don't have an existing table
-   if (symbol_stack.size() == 0) {
-      symbol_stack.push_back(new symbol_table());
-   } else if (symbol_stack.back() == nullptr) {
-      symbol_stack.back() = new symbol_table();
+                           bool isStruct) {
+   symbol_table* table;
+   if (isStruct) {
+      if (struct_def_table == nullptr) {
+         struct_def_table = new symbol_table();
+      }
+      
+      table = struct_def_table;
+   } else {
+      //if we don't have an existing table
+      if (symbol_stack.size() == 0) {
+         symbol_stack.push_back(new symbol_table());
+      } else if (symbol_stack.back() == nullptr) {
+         symbol_stack.back() = new symbol_table();
+      }
+      
+      table = symbol_stack.back();
    }
    
-   structName = structname;
-   auto entry = symbol_stack.back()->emplace(lexinfo, this);
+   auto entry = table->emplace(lexinfo, this);
    
    if (symFile) {
       dumpEntry(symFile, *(entry.first));
@@ -151,8 +163,8 @@ int symbol::recurseSymTable(astree* subTree) {
    }
    
    symbol* createdSymbol = nullptr;
-   //astree* tempAST = nullptr;
-
+   symbol* tempSymbol = nullptr;
+   
    //Attribute switch
    switch (subTree->token) {
    case TOK_BLOCK:
@@ -187,6 +199,20 @@ int symbol::recurseSymTable(astree* subTree) {
       }
       break;
    //BINARY-OPS--------------------------------------------------------
+   case '=':
+      if (!isCompatible(subTree->children[0]->attributes,
+                       subTree->children[1]->attributes)) {
+         symErrPrint(subTree,
+            "Assignment operator expects matching types!");
+      } else if (!subTree->children[0]->attributes[ATTR_lval]) {
+         symErrPrint(subTree,
+            "Assignment operator expects lefthand operand is lval!");
+      } else {
+         copyType(subTree->attributes,
+                  subTree->children[0]->attributes);
+         subTree->attributes.set(ATTR_vreg, 1);
+      }
+      break;
    case '+':
    case '-':
    case '*':
@@ -223,7 +249,7 @@ int symbol::recurseSymTable(astree* subTree) {
    case TOK_NEW:
       if (!subTree->children[0]->attributes[ATTR_typeid]) {
          symErrPrint(subTree,
-               "Identifier must by a valid typeid for allocations!");
+               "Identifier must be a valid typeid for allocations!");
       } else {
          subTree->attributes.set(ATTR_struct, 1);
          subTree->attributes.set(ATTR_vreg, 1);
@@ -280,20 +306,50 @@ int symbol::recurseSymTable(astree* subTree) {
       subTree->attributes.set(ATTR_const, 1);
       subTree->attributes.set(ATTR_null, 1);
       break;
-   //ELEMENT-&&-ACCESS-------------------------------------------------
+   //ELEMENT-ACCESS----------------------------------------------------
    case TOK_INDEX:
+      if (!subTree->children[1]->attributes[ATTR_int] ||
+          (subTree->children[1]->attributes[ATTR_array])) {
+         symErrPrint(subTree,
+               "Index value must be an int!");
+      } else if (subTree->children[0]->attributes[ATTR_string]) {
+         subTree->attributes.set(ATTR_char, 1);
+         subTree->attributes.set(ATTR_vaddr, 1);
+         subTree->attributes.set(ATTR_lval, 1);
+      } else if (subTree->children[0]->attributes[ATTR_array]) {
+         copyType(subTree->attributes, 
+            subTree->children[0]->attributes);
+         subTree->attributes.set(ATTR_array, 0);
+         subTree->attributes.set(ATTR_vaddr, 1);
+         subTree->attributes.set(ATTR_lval, 1);
+      } else {
+         symErrPrint(subTree,
+               "Only strings and arrays can be indexed!");
+      }
       break;
    //STRUCTS-&&-FIELDS-------------------------------------------------
    case TOK_STRUCT:
+      subTree->attributes.set(ATTR_struct, 1);
+      createdSymbol = new symbol(subTree);
+      createdSymbol->structName = subTree->children[0]->lexinfo;
+      createdSymbol->insert_symbol(createdSymbol->structName, true);
+      if (subTree->children.size() > 0) {
+         createdSymbol->fields = new symbol_table();
+         for (astree* child: subTree->children) {
+            tempSymbol = new symbol(child);
+            createdSymbol->fields->emplace(child->lexinfo, tempSymbol);
+         }
+      }
       break;
    case '.':
       if ((!subTree->children[0]->attributes[ATTR_struct]) ||
           (subTree->children[0]->attributes[ATTR_array])) {
          symErrPrint(subTree,
-               "Identifier must be a struct for field allocation!");
+               "Identifier must be a struct for field selection!");
       } else {
          subTree->attributes.set(ATTR_vaddr, 1);
          subTree->attributes.set(ATTR_lval, 1);
+         
       }
       break;
    case TOK_TYPEID:
@@ -304,12 +360,20 @@ int symbol::recurseSymTable(astree* subTree) {
          child->attributes.set(ATTR_param, 1);
       }
       break;
+   //OTHER-IDENTS------------------------------------------------------
+   case TOK_VARDECL:
+      break;
+   //CONTROL-----------------------------------------------------------
+   case TOK_IF:
+   case TOK_WHILE:
+      if ((!subTree->children[0]->attributes[ATTR_bool]) ||
+          (subTree->children[0]->attributes[ATTR_array])) {
+         symErrPrint(subTree,
+               "Conditional should be a boolean!");
+      }
+      break;
    default:
       break;
-   }
-   
-   if (createdSymbol != nullptr) {
-      createdSymbol->insert_symbol(subTree->lexinfo);
    }
    
    return 0;

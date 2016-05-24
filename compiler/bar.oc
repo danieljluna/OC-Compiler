@@ -1,13 +1,21 @@
-b = new bool[10];
-c = new string(56);
-a.b;
-a = new blah();
+int a = 1;
+bool b = 0;
 
 
 struct blah {
    bool foo;
-   int bar;
+   asdf bar;
+   bool [] boolArray;
 }
+
+if (true) (new string(5))[1] = 'a';
+
+b = new bool[10];
+c = new string(56);
+a = new blah();
+a.foo;
+a[b];
+a.so;
 
 
 /*
