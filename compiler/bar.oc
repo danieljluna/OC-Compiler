@@ -1,18 +1,29 @@
-struct foo {
-   bool [] a;
-   void n;
+(1 + 2);
+(2 - 1);
+(4 * -2);
+(5 / 2 % 3);
+
+(true == (5 < 6));
+
+(true == ("12" != "ab"));
+
+char a = chr ord ord chr 5));
+
+/*
+struct a {
+   int one;
+   int two;
+   char three;
 }
 
-bool bob(int a, bool b);
-
-{
-   bool b = bob(10, true);
-   int c = new int [-5];
-   blah xkcd = new blah();
+/*
+string[] argv = getargv ();
+int argi = 1;
+while (argv[argi] != null) {
+   if (argi > 1) putc (' ');
+   puts (argv[argi]);
+   argi = argi + 1;
 }
+endl ();
 
-
-bool bob(int a, bool b) {
-   char c = 'c';
-   a = 5;
-}
+*/

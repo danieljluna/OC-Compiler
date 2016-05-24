@@ -29,9 +29,14 @@ struct symbol {
    size_t block_nr;
    symbol_table* fields;
    vector<symbol*>* parameters;
+   string* structName;
    
    //Ctor
    symbol(astree* origin);
+   
+   //Print Symbol
+   static void dumpTable(FILE* file, symbol_table symTable);
+   static void dumpEntry(FILE* file, symbol_entry symEntry);
    
    //Insert this symbol to static tables
    void insert_symbol(const string* lexinfo);
@@ -49,6 +54,23 @@ struct symbol {
    static int recurseSymTable(astree* subTree);
    static int buildSymTable(astree* root);
    
+   //Sets buildSymTable to output .sym File
+   static bool log(const char* filename);
+   static void endLog();
+   
+   static void symErrPrint(astree* ast, string error);
+   
+private:
+   
+   static FILE* symFile;
+   
 };
+
+
+void typeCheck_unary_op(astree* ast,
+                        Attributes operand, 
+                        Attributes result);
+
+
 
 #endif

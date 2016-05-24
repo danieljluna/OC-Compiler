@@ -111,12 +111,13 @@ int main(int argc, char** argv) {
             lexer::terminateLog();
             
             //Type Check
+            //Generate .sym file
+            symbol::log(fname.c_str());
             symbol::buildSymTable(parser::root);
+            symbol::endLog();
             
             //Generate .ast file
             parser::log(fname.c_str());
-            //Generate .sym file
-            //------
             
             //Check if bison / flex failed
             int lclose_rc = pclose(yyin);

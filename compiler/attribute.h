@@ -28,4 +28,13 @@ const map<int, string> attributeStrings = {
    {ATTR_vaddr,  "vaddr"   },    {ATTR_size,   "SIZE"    }
 };
 
+
+bool isPrimitive(const attr_bitset& attribute);
+bool isReference(const attr_bitset& attribute);
+bool isBase(const attr_bitset& attribute);
+bool isCompatible(const attr_bitset& attr1, 
+                  const attr_bitset& attr2);
+
+
+
 #endif

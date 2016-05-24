@@ -139,6 +139,8 @@ expr        : expr '=' expr         { $$ = $2->adopt($1, $3); }
             | '!' expr              { $$ = $1->adopt($2); }
             | '+' expr   %prec POS  { $$ = $1->adopt(TOK_POS, $2); }
             | '-' expr   %prec NEG  { $$ = $1->adopt(TOK_NEG, $2); }
+            | TOK_ORD expr          { $$ = $1->adopt($2); }
+            | TOK_CHR expr          { $$ = $1->adopt($2); }
             | allocator             { $$ = $1; }
             | '(' expr ')'  %prec EXPR_PAREN
                                     { free($1, $3); $$ = $2; }
