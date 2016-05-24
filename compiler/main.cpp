@@ -117,7 +117,6 @@ int main(int argc, char** argv) {
             else {
                //Type Check
                //Generate .sym file
-               parser::log(fname.c_str());
                symbol::log(fname.c_str());
                symbol::buildSymTable(parser::root);
                symbol::endLog();
