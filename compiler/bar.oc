@@ -4,7 +4,7 @@ bool b = 0;
 
 struct blah {
    bool foo;
-   asdf bar;
+   blah bar;
    bool [] boolArray;
 }
 

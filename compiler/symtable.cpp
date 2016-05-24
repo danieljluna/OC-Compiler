@@ -335,9 +335,19 @@ int symbol::recurseSymTable(astree* subTree) {
       createdSymbol->insert_symbol(createdSymbol->structName, true);
       if (subTree->children.size() > 0) {
          createdSymbol->fields = new symbol_table();
-         for (astree* child: subTree->children) {
-            tempSymbol = new symbol(child);
-            createdSymbol->fields->emplace(child->lexinfo, tempSymbol);
+         for (size_t i = 1; i < subTree->children.size(); ++i) {
+            astree* child = subTree->children[i];
+            astree* ident = child->children.back();
+            ident->attributes.set(ATTR_field, 1);
+            tempSymbol = generateIdent(child);
+            
+            if (tempSymbol != nullptr) {
+               auto entry = createdSymbol->fields->emplace(
+                                    ident->lexinfo, tempSymbol);
+               if (symFile) {
+                  dumpEntry(symFile, *(entry.first));
+               }
+            }
          }
       }
       break;
@@ -349,7 +359,6 @@ int symbol::recurseSymTable(astree* subTree) {
       } else {
          subTree->attributes.set(ATTR_vaddr, 1);
          subTree->attributes.set(ATTR_lval, 1);
-         
       }
       break;
    case TOK_TYPEID:
@@ -445,5 +454,36 @@ void typeCheck_unary_op(astree* ast,
       ast->attributes.set(result, 1);
       ast->attributes.set(ATTR_vreg, 1);
    }
+}
+
+
+
+
+symbol* generateIdent(astree* ast) {
+   symbol* result = nullptr;
+   
+   if (ast->token != TOK_ARRAY) {
+      //Handle structs
+      if (ast->token == TOK_TYPEID) {
+         auto it = symbol::struct_def_table->find(ast->lexinfo);
+         if (it == symbol::struct_def_table->end()) {
+            symbol::symErrPrint(ast,
+                  "No structure found of that name!");
+            
+            return nullptr;
+         } else {
+            copyType(ast->attributes, it->second->attributes);
+         }
+      }
+      copyType(ast->children[0]->attributes, ast->attributes);
+      result = new symbol(ast->children[0]);
+   } else {
+      copyType(ast->children[1]->attributes,
+               ast->children[0]->attributes);
+      ast->children[1]->attributes.set(ATTR_array, 1);
+      result = new symbol(ast->children[1]);
+   }
+   
+   return result;
 }
 
