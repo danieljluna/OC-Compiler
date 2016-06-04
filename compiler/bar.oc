@@ -1,5 +1,5 @@
 (1 + 2);
-(2 - 1);
+(2 - 'a');
 (4 * -2);
 (5 / 2 % 3);
 
@@ -7,9 +7,9 @@
 
 (true == ("12" != "ab"));
 
-char a = chr ord ord chr 5));
+char a = chr ord chr 5;
 
-/*
+
 struct a {
    int one;
    int two;

@@ -11,7 +11,7 @@ using namespace std;
 #include "attribute.h"
 #include "auxlib.h"
 #include "stringset.h"
-#include "symtable.h"
+#include "symbol.h"
 
 struct astree {
 
