@@ -27,7 +27,7 @@
 %token TOK_POS TOK_NEG TOK_NEWARRAY TOK_TYPEID TOK_FIELD
 %token TOK_ORD TOK_CHR TOK_ROOT TOK_DECLID TOK_INDEX 
 %token TOK_NEWSTRING TOK_RETURNVOID TOK_VARDECL TOK_FUNCTION
-%token TOK_PARAMLIST TOK_PROTOTYPE
+%token TOK_PARAMLIST TOK_PROTOTYPE TOK_STRPROTO
 
 %initial-action {
    parser::root = new astree(TOK_ROOT, {0, 0, 0}, "<<ROOT>>");
@@ -67,6 +67,7 @@ structdec   : TOK_STRUCT ident      { $$ = $1->adopt($2, TOK_TYPEID);}
          
 structdef   : fielddecs '}'         { $$ = $1; free($2); }
             | structdec '{' '}'     { $$ = $1; free($2, $3); }
+            | structdec ';'         { $$ = $1->adopt(TOK_STRPROTO,$2);}
             ;
             
 fielddecs   : fielddecs fielddec ';'   

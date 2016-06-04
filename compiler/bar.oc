@@ -1,15 +1,27 @@
-(1 + 2);
-(2 - 'a');
-(4 * -2);
-(5 / 2 % 3);
+int a = 1;
+bool b = 0;
 
-(true == (5 < 6));
 
-(true == ("12" != "ab"));
+struct blah {
+   bool foo;
+   blah bar;
+   bool [] boolArray;
+}
+
+/*
+if (true) (new string(5))[1] = 'a';
+
+
+b = new bool[10];
+c = new string(56);
+a = new blah();
+a.foo;
+a[b];
+a.so;
 
 char a = chr ord chr 5;
 
-
+/*
 struct a {
    int one;
    int two;
